@@ -7,9 +7,9 @@ import (
 	"github.com/micro/go-micro/config/source/env"
 	"github.com/sirupsen/logrus"
 
-	"skeleton/pkg/cfg/factory"
-	"skeleton/pkg/ext"
-	"skeleton/pkg/ext/config/spring"
+	"github.com/GotaX/go-server-skeleton/pkg/cfg/factory"
+	"github.com/GotaX/go-server-skeleton/pkg/ext"
+	"github.com/GotaX/go-server-skeleton/pkg/ext/config/spring"
 )
 
 const (

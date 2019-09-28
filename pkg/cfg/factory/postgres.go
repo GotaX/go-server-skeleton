@@ -7,7 +7,7 @@ import (
 
 	_ "github.com/lib/pq"
 
-	"skeleton/pkg/ext"
+	"github.com/GotaX/go-server-skeleton/pkg/ext"
 )
 
 var POSTGRES = Option{

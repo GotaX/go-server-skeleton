@@ -7,11 +7,11 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"skeleton/internal/example/pkg/srvrest"
-	"skeleton/internal/example/pkg/srvrpc"
-	"skeleton/pkg/endpoint"
-	"skeleton/pkg/endpoint/metrics"
-	"skeleton/pkg/ext"
+	"github.com/GotaX/go-server-skeleton/internal/example/pkg/srvrest"
+	"github.com/GotaX/go-server-skeleton/internal/example/pkg/srvrpc"
+	"github.com/GotaX/go-server-skeleton/pkg/endpoint"
+	"github.com/GotaX/go-server-skeleton/pkg/endpoint/metrics"
+	"github.com/GotaX/go-server-skeleton/pkg/ext"
 )
 
 func main() {

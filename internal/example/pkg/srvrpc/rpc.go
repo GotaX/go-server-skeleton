@@ -10,11 +10,11 @@ import (
 	"golang.org/x/xerrors"
 	"google.golang.org/grpc"
 
-	"skeleton/internal/example/pkg/cfg"
-	"skeleton/internal/example/pkg/rpc"
-	"skeleton/pkg/endpoint"
-	rpc2 "skeleton/pkg/endpoint/rpc"
-	"skeleton/pkg/errors"
+	"github.com/GotaX/go-server-skeleton/internal/example/pkg/cfg"
+	"github.com/GotaX/go-server-skeleton/internal/example/pkg/rpc"
+	"github.com/GotaX/go-server-skeleton/pkg/endpoint"
+	rpc2 "github.com/GotaX/go-server-skeleton/pkg/endpoint/rpc"
+	"github.com/GotaX/go-server-skeleton/pkg/errors"
 )
 
 func Server() endpoint.GrpcServer {

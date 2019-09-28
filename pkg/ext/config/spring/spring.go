@@ -7,7 +7,7 @@ import (
 	"github.com/micro/go-micro/config"
 	"github.com/micro/go-micro/config/source"
 
-	"skeleton/pkg/ext/config/url"
+	"github.com/GotaX/go-server-skeleton/pkg/ext/config/url"
 )
 
 const (

@@ -9,7 +9,7 @@ import (
 	driver "google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 
-	"skeleton/pkg/ext"
+	"github.com/GotaX/go-server-skeleton/pkg/ext"
 )
 
 var GRPC = Option{

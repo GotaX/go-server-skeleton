@@ -12,8 +12,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 
-	"skeleton/pkg/errors"
-	"skeleton/pkg/ext"
+	"github.com/GotaX/go-server-skeleton/pkg/errors"
+	"github.com/GotaX/go-server-skeleton/pkg/ext"
 )
 
 const (

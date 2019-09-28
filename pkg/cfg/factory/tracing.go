@@ -14,7 +14,7 @@ import (
 	"go.opencensus.io/trace"
 	"golang.org/x/xerrors"
 
-	"skeleton/pkg/ext"
+	"github.com/GotaX/go-server-skeleton/pkg/ext"
 )
 
 var Tracing = Option{

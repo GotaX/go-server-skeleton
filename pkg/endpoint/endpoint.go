@@ -10,7 +10,7 @@ import (
 	"go.opencensus.io/plugin/ochttp"
 	"golang.org/x/sync/errgroup"
 
-	"skeleton/pkg/ext"
+	"github.com/GotaX/go-server-skeleton/pkg/ext"
 )
 
 type Endpoint interface {

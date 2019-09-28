@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"skeleton/pkg/ext"
+	"github.com/GotaX/go-server-skeleton/pkg/ext"
 )
 
 const (

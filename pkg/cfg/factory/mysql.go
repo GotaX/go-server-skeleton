@@ -7,7 +7,7 @@ import (
 	driver "github.com/go-sql-driver/mysql"
 	"github.com/sirupsen/logrus"
 
-	"skeleton/pkg/ext"
+	"github.com/GotaX/go-server-skeleton/pkg/ext"
 )
 
 var MySQL = Option{

@@ -9,9 +9,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 
-	"skeleton/internal/example/pkg/rpc"
-	"skeleton/pkg/endpoint/server"
-	"skeleton/pkg/errors"
+	"github.com/GotaX/go-server-skeleton/internal/example/pkg/rpc"
+	"github.com/GotaX/go-server-skeleton/pkg/endpoint/server"
+	"github.com/GotaX/go-server-skeleton/pkg/errors"
 )
 
 func Router() http.Handler {

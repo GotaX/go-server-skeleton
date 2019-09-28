@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/stats"
 
-	"skeleton/pkg/errors"
+	"github.com/GotaX/go-server-skeleton/pkg/errors"
 )
 
 func StreamClientErrorHandler() grpc.StreamClientInterceptor {

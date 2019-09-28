@@ -105,7 +105,9 @@ func init() {
 	proto.RegisterType((*HelloResponse)(nil), "demo.HelloResponse")
 }
 
-func init() { proto.RegisterFile("skeleton.proto", fileDescriptor_6886a4503bdb71bf) }
+func init() {
+	proto.RegisterFile("github.com/GotaX/go-server-skeleton.proto", fileDescriptor_6886a4503bdb71bf)
+}
 
 var fileDescriptor_6886a4503bdb71bf = []byte{
 	// 154 bytes of a gzipped FileDescriptorProto
@@ -190,5 +192,5 @@ var _HelloService_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "skeleton.proto",
+	Metadata: "github.com/GotaX/go-server-skeleton.proto",
 }
