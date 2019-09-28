@@ -1,0 +1,105 @@
+package factory
+
+import (
+	"net/http"
+
+	"contrib.go.opencensus.io/exporter/jaeger"
+	"contrib.go.opencensus.io/exporter/zipkin"
+	. "github.com/openzipkin/zipkin-go"
+	. "github.com/openzipkin/zipkin-go/reporter/http"
+	"github.com/sirupsen/logrus"
+	exporter2 "go.opencensus.io/examples/exporter"
+	"go.opencensus.io/plugin/ochttp"
+	"go.opencensus.io/plugin/ochttp/propagation/tracecontext"
+	"go.opencensus.io/trace"
+	"golang.org/x/xerrors"
+
+	"skeleton/pkg/ext"
+)
+
+var Tracing = Option{
+	Name:     "Tracing",
+	OnCreate: newTracing,
+}
+
+func newTracing(source Scanner) (interface{}, error) {
+	var c struct {
+		ServiceName string `json:"serviceName"`
+		Endpoint    string `json:"endpoint"`
+		Type        string `json:"type"`
+		Jaeger      string `json:"jaeger"`
+	}
+	if err := source.Scan(&c); err != nil {
+		return nil, err
+	}
+
+	var (
+		exporter trace.Exporter
+		err      error
+	)
+	if !isDefaultEnv() {
+		switch c.Type {
+		case "jaeger":
+			exporter, err = newJaegerExporter(c.ServiceName, c.Jaeger)
+			ext.Propagation = &ext.JaegerFormat{}
+		case "zipkin":
+			exporter, _, err = newZipkinExporter(c.ServiceName, c.Endpoint)
+			ext.Propagation = &tracecontext.HTTPFormat{}
+		}
+	} else {
+		exporter = &exporter2.PrintExporter{}
+	}
+	if err != nil {
+		logrus.WithError(err).Fatal("Fail to init tracing")
+	}
+
+	if exporter != nil {
+		trace.RegisterExporter(exporter)
+		trace.ApplyConfig(trace.Config{
+			DefaultSampler: trace.AlwaysSample(),
+		})
+	} else {
+		logrus.Warn("Tracing exporter not set")
+	}
+
+	http.DefaultClient.Transport = &ochttp.Transport{
+		Propagation:    ext.Propagation,
+		FormatSpanName: formatSpanName,
+	}
+	return exporter, nil
+}
+
+func formatSpanName(request *http.Request) string {
+	if name := request.URL.Path; name != "" {
+		return name
+	}
+	return "/"
+}
+
+func newZipkinExporter(serviceName, endpoint string) (trace.Exporter, func(), error) {
+	onError := func(err error) (trace.Exporter, func(), error) {
+		return nil, nil, xerrors.Errorf("while newZipkinExporter: %w", err)
+	}
+	ip, err := ext.HostIP()
+	if err != nil {
+		return onError(err)
+	}
+	host := ip.String() + ":8080"
+
+	localEndpoint, err := NewEndpoint(serviceName, host)
+	if err != nil {
+		return onError(err)
+	}
+	reporter := NewReporter(endpoint)
+	exporter := zipkin.NewExporter(reporter, localEndpoint)
+	return exporter, func() { _ = reporter.Close() }, nil
+}
+
+func newJaegerExporter(serviceName, endpoint string) (trace.Exporter, error) {
+	return jaeger.NewExporter(jaeger.Options{
+		AgentEndpoint: endpoint + ":6831",
+		Process: jaeger.Process{
+			ServiceName: serviceName,
+		},
+	})
+}
