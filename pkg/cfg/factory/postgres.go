@@ -10,7 +10,7 @@ import (
 	"github.com/GotaX/go-server-skeleton/pkg/ext"
 )
 
-var POSTGRES = Option{
+var Postgres = Option{
 	Name:      "Postgres",
 	OnCreate:  newPostgres,
 	OnCreated: checkDBAlive,

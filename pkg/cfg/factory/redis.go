@@ -6,7 +6,7 @@ import (
 	driver "github.com/go-redis/redis"
 )
 
-var REDIS = Option{
+var Redis = Option{
 	Name:     "Redis",
 	OnCreate: newRedis,
 }

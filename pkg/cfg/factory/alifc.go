@@ -4,8 +4,8 @@ import (
 	driver "github.com/aliyun/fc-go-sdk"
 )
 
-var FC = Option{
-	Name:     "FC",
+var AliFc = Option{
+	Name:     "AliFc",
 	OnCreate: newFc,
 }
 

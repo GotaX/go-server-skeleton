@@ -30,7 +30,7 @@ type ProviderMethod func(target interface{})
 
 // Tool function
 
-func isDefaultEnv() bool {
+func IsDefaultEnv() bool {
 	profile := os.Getenv(EnvProfile)
 	return profile == "" || profile == DefaultProfile
 }

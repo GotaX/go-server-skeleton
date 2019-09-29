@@ -37,7 +37,7 @@ func newTracing(source Scanner) (interface{}, error) {
 		exporter trace.Exporter
 		err      error
 	)
-	if !isDefaultEnv() {
+	if !IsDefaultEnv() {
 		switch c.Type {
 		case "jaeger":
 			exporter, err = newJaegerExporter(c.ServiceName, c.Jaeger)

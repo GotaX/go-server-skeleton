@@ -47,7 +47,7 @@ func newLog(source Scanner) (interface{}, error) {
 		TimestampFormat: "15:04:05",
 	})
 
-	if isDefaultEnv() {
+	if IsDefaultEnv() {
 		logger.SetLevel(logrus.DebugLevel)
 		return logger, nil
 	}
