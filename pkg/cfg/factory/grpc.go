@@ -34,11 +34,11 @@ func newGrpc(source Scanner) (interface{}, error) {
 			},
 		}),
 		driver.WithChainStreamInterceptor(
-			ext.StreamClientErrorHandler(),
 			retry.StreamClientInterceptor(opts...),
+			ext.StreamClientErrorHandler(),
 		),
 		driver.WithChainUnaryInterceptor(
-			ext.UnaryClientErrorHandler(),
 			retry.UnaryClientInterceptor(opts...),
+			ext.UnaryClientErrorHandler(),
 		))
 }
