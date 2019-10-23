@@ -20,7 +20,7 @@ type mysqlLogger struct{}
 
 func (l *mysqlLogger) Print(v ...interface{}) { logrus.Debug(v...) }
 
-func newMySQL(source Scanner) (interface{}, error) {
+func newMySQL(source Scanner) (v interface{}, err error) {
 	if err := driver.SetLogger(&mysqlLogger{}); err != nil {
 		return nil, err
 	}
@@ -44,9 +44,11 @@ func newMySQL(source Scanner) (interface{}, error) {
 		mu += "?" + values.Encode()
 	}
 
-	name, err := ext.RegisterTracingDriver("mysql")
-	if err != nil {
-		return nil, err
+	name := "mysql"
+	if IsDefaultEnv() {
+		if name, err = ext.RegisterTracingDriver(name); err != nil {
+			return nil, err
+		}
 	}
 	return sql.Open(name, mu)
 }
