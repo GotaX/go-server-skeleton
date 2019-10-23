@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/golang/protobuf/proto"
@@ -37,6 +38,24 @@ type HttpResponse struct {
 		Status  string       `json:"status"`
 		Details []HttpDetail `json:"details"`
 	} `json:"error"`
+}
+
+func FromHttp(resp *http.Response) error {
+	if resp.StatusCode < http.StatusBadRequest {
+		return nil
+	}
+
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return E(Internal, err)
+	}
+
+	var hr HttpResponse
+	if err = json.Unmarshal(data, &hr); err != nil || hr.Error.Code == 0 {
+		return E(Internal, err)
+	}
+
+	return E(StrToCode(hr.Error.Status), hr.Error.Message)
 }
 
 func Http(requestId string, err error) (r HttpResponse) {
@@ -138,4 +157,28 @@ var codeToStr = map[code]string{
 
 func CodeToStr(c code) string {
 	return codeToStr[c]
+}
+
+var strToCode = map[string]code{
+	"OK":                  OK,
+	"CANCELLED":           Canceled,
+	"UNKNOWN":             Unknown,
+	"INVALID_ARGUMENT":    InvalidArgument,
+	"DEADLINE_EXCEEDED":   DeadlineExceeded,
+	"NOT_FOUND":           NotFound,
+	"ALREADY_EXISTS":      AlreadyExists,
+	"PERMISSION_DENIED":   PermissionDenied,
+	"RESOURCE_EXHAUSTED":  ResourceExhausted,
+	"FAILED_PRECONDITION": FailedPrecondition,
+	"ABORTED":             Aborted,
+	"OUT_OF_RANGE":        OutOfRange,
+	"UNIMPLEMENTED":       Unimplemented,
+	"INTERNAL":            Internal,
+	"UNAVAILABLE":         Unavailable,
+	"DATA_LOSS":           DataLoss,
+	"UNAUTHENTICATED":     Unauthenticated,
+}
+
+func StrToCode(str string) code {
+	return strToCode[str]
 }
