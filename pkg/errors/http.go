@@ -63,8 +63,10 @@ func Http(requestId string, err error) (r HttpResponse) {
 		switch {
 		case errors.Is(err, context.Canceled):
 			r.Error.Status = CodeToStr(Canceled)
+			r.Error.Code = CodeToHttp(Canceled)
 		case errors.Is(err, context.DeadlineExceeded):
 			r.Error.Status = CodeToStr(DeadlineExceeded)
+			r.Error.Code = CodeToHttp(DeadlineExceeded)
 		}
 	}()
 
