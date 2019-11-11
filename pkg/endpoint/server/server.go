@@ -27,7 +27,6 @@ const (
 )
 
 func Gin(router func(gin.IRouter)) http.Handler {
-	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 	r.Use(gin.Recovery())
 	r.Use(genRequestId())
