@@ -65,7 +65,7 @@ func (e *PrintExporter) ExportView(vd *view.Data) {
 			fmt.Fprintf(sb, "%v- %v=%v\n", indent, tag.Key.Name(), tag.Value)
 		}
 	}
-	println(sb)
+	e.logger.Traceln(sb)
 }
 
 // ExportSpan logs the trace span.
@@ -109,5 +109,5 @@ func (e *PrintExporter) ExportSpan(vd *trace.SpanData) {
 			fmt.Fprintf(sb, "%v- %v=%v\n", indent, k, v)
 		}
 	}
-	logrus.Debugln(sb)
+	logrus.Traceln(sb)
 }
