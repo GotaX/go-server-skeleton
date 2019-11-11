@@ -27,7 +27,10 @@ const (
 )
 
 func Gin(router func(gin.IRouter)) http.Handler {
-	r := gin.Default()
+	r := gin.New()
+	r.Use(gin.LoggerWithConfig(gin.LoggerConfig{
+		Output: logrus.StandardLogger().WriterLevel(logrus.DebugLevel),
+	}))
 	r.Use(gin.Recovery())
 	r.Use(genRequestId())
 	r.Use(accessLog())

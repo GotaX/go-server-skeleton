@@ -8,7 +8,6 @@ import (
 	. "github.com/openzipkin/zipkin-go"
 	. "github.com/openzipkin/zipkin-go/reporter/http"
 	"github.com/sirupsen/logrus"
-	exporter2 "go.opencensus.io/examples/exporter"
 	"go.opencensus.io/plugin/ochttp"
 	"go.opencensus.io/plugin/ochttp/propagation/tracecontext"
 	"go.opencensus.io/trace"
@@ -47,7 +46,7 @@ func newTracing(source Scanner) (interface{}, error) {
 			ext.Propagation = &tracecontext.HTTPFormat{}
 		}
 	} else {
-		exporter = &exporter2.PrintExporter{}
+		exporter = &PrintExporter{logger: logrus.New()}
 	}
 	if err != nil {
 		logrus.WithError(err).Fatal("Fail to init tracing")
