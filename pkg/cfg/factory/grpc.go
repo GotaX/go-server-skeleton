@@ -27,7 +27,7 @@ func newGrpc(source Scanner) (interface{}, error) {
 		retry.WithBackoff(retry.BackoffExponential(100 * time.Millisecond)),
 		retry.WithCodes(codes.Unavailable, codes.ResourceExhausted, codes.Aborted),
 	}
-	return driver.Dial(target, driver.WithInsecure(), driver.WithBlock(),
+	return driver.Dial(target, driver.WithInsecure(),
 		driver.WithStatsHandler(&ocgrpc.ClientHandler{
 			StartOptions: trace.StartOptions{
 				Sampler: trace.AlwaysSample(),
