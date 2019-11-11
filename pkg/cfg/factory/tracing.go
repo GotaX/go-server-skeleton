@@ -46,7 +46,7 @@ func newTracing(source Scanner) (interface{}, error) {
 			ext.Propagation = &tracecontext.HTTPFormat{}
 		}
 	} else {
-		exporter = &PrintExporter{logger: logrus.New()}
+		exporter = &PrintExporter{logger: logrus.StandardLogger()}
 	}
 	if err != nil {
 		logrus.WithError(err).Fatal("Fail to init tracing")
