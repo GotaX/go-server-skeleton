@@ -15,7 +15,7 @@ import (
 const (
 	sApp               = "app"
 	kAppName, dAppName = "name", "demo"
-	kProfile, dProfile = factory.EnvProfile, factory.DefaultProfile
+	kProfile, dProfile = "profile", "default"
 )
 
 var (

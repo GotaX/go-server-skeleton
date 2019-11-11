@@ -23,40 +23,54 @@ type Service interface {
 	Register(server *grpc.Server)
 }
 
-/*
-NewGrpcServer create a basic server with: access log, health check, prometheus, recovery
+func registerHealthServer(s *grpc.Server) {
+	hsrv := health.NewServer()
+	hsrv.SetServingStatus("", healthpb.HealthCheckResponse_SERVING)
+	healthpb.RegisterHealthServer(s, hsrv)
+}
 
-entry is logger for access log, extractor is used to extract fields from request to log
-*/
-func NewGrpcServer(entry *logrus.Entry, extractor grpcCtxTags.RequestFieldExtractorFunc, services ...Service) *grpc.Server {
+type GrpcConfiguration struct {
+	LogEntry     *logrus.Entry
+	LogExtractor grpcCtxTags.RequestFieldExtractorFunc
+	LogDecider   func(fullMethodName string, err error) bool
+	services     []Service
+}
+
+func (c *GrpcConfiguration) Register(service Service) {
+	c.services = append(c.services, service)
+}
+
+func NewGrpcServer(configure func(c *GrpcConfiguration)) *grpc.Server {
+	const mHealth = "/grpc.health.v1.Health/Check"
+	c := &GrpcConfiguration{
+		LogEntry:     logrus.NewEntry(logrus.StandardLogger()),
+		LogDecider:   func(fullMethodName string, err error) bool { return fullMethodName != mHealth },
+		LogExtractor: func(fullMethod string, req interface{}) map[string]interface{} { return nil },
+	}
+	configure(c)
+
 	s := grpc.NewServer(
 		grpc.StatsHandler(ext.TraceHandler()),
 		grpc.StreamInterceptor(grpcMiddleware.ChainStreamServer(
-			grpcCtxTags.StreamServerInterceptor(grpcCtxTags.WithFieldExtractor(extractor)),
-			grpcLogrus.StreamServerInterceptor(entry, ext.LogDecider()),
+			grpcCtxTags.StreamServerInterceptor(grpcCtxTags.WithFieldExtractor(c.LogExtractor)),
+			grpcLogrus.StreamServerInterceptor(c.LogEntry, ext.LogDecider()),
 			grpcPrometheus.StreamServerInterceptor,
 			grpcRecovery.StreamServerInterceptor(ext.RecoveryHandler()),
 			ext.StreamServerErrorHandler(),
 		)),
 		grpc.UnaryInterceptor(grpcMiddleware.ChainUnaryServer(
-			grpcCtxTags.UnaryServerInterceptor(grpcCtxTags.WithFieldExtractor(extractor)),
-			grpcLogrus.UnaryServerInterceptor(entry, ext.LogDecider()),
+			grpcCtxTags.UnaryServerInterceptor(grpcCtxTags.WithFieldExtractor(c.LogExtractor)),
+			grpcLogrus.UnaryServerInterceptor(c.LogEntry, ext.LogDecider()),
 			grpcPrometheus.UnaryServerInterceptor,
 			grpcRecovery.UnaryServerInterceptor(ext.RecoveryHandler()),
 			ext.UnaryServerErrorHandler(),
 		)))
 
-	registerHealthServer(s)
-	reflection.Register(s)
-
-	for _, srv := range services {
+	for _, srv := range c.services {
 		srv.Register(s)
 	}
-	return s
-}
 
-func registerHealthServer(s *grpc.Server) {
-	hsrv := health.NewServer()
-	hsrv.SetServingStatus("", healthpb.HealthCheckResponse_SERVING)
-	healthpb.RegisterHealthServer(s, hsrv)
+	registerHealthServer(s)
+	reflection.Register(s)
+	return s
 }

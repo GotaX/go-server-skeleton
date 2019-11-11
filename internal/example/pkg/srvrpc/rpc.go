@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
+	"net"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -17,8 +18,19 @@ import (
 	"github.com/GotaX/go-server-skeleton/pkg/errors"
 )
 
+type mServer struct{ srv *grpc.Server }
+
+func (s mServer) Serve(lis net.Listener) error { return s.srv.Serve(lis) }
+func (s mServer) Stop()                        { s.srv.GracefulStop() }
+
 func Server() endpoint.GrpcServer {
-	return rpc2.NewGrpcServer(accessLogger(), extractor, newService())
+	srv := rpc2.NewGrpcServer(func(c *rpc2.GrpcConfiguration) {
+		c.LogEntry = accessLogger()
+		c.LogExtractor = extractor
+
+		c.Register(newService())
+	})
+	return mServer{srv: srv}
 }
 
 func accessLogger() *logrus.Entry {
