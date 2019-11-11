@@ -52,10 +52,13 @@ func loadConfig() (name, profile string) {
 	name = config.Get(sApp, kAppName).String(dAppName)
 	profile = config.Get(sApp, kProfile).String(dProfile)
 
-	if err := config.Load(spring.NewSource(
-		spring.WithName(name),
-		spring.WithProfile(profile),
-	)); err != nil {
+	if err := config.Load(
+		spring.NewSource(
+			spring.WithName(name),
+			spring.WithProfile(profile),
+		),
+		env.NewSource(),
+	); err != nil {
 		logrus.WithError(err).Fatal("Exit with error")
 	}
 	return

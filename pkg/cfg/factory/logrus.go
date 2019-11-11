@@ -47,11 +47,6 @@ func newLog(source Scanner) (interface{}, error) {
 		TimestampFormat: "15:04:05",
 	})
 
-	if IsDefaultEnv() {
-		logger.SetLevel(logrus.DebugLevel)
-		return logger, nil
-	}
-
 	// Setup level
 	level, err := logrus.ParseLevel(lc.Level)
 	if err != nil {
@@ -59,6 +54,10 @@ func newLog(source Scanner) (interface{}, error) {
 		level = logrus.InfoLevel
 	}
 	logger.SetLevel(level)
+
+	if IsDefaultEnv() {
+		return logger, nil
+	}
 
 	// Register hook
 	var (
