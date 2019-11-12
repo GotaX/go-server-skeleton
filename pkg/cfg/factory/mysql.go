@@ -3,6 +3,7 @@ package factory
 import (
 	"database/sql"
 	"fmt"
+	"math"
 
 	driver "github.com/go-sql-driver/mysql"
 	"github.com/sirupsen/logrus"
@@ -32,6 +33,8 @@ func newMySQL(source Scanner) (v interface{}, err error) {
 		Username string   `json:"username"`
 		Password string   `json:"password"`
 		Params   []string `json:"params"`
+		MaxOpen  int      `json:"maxOpen"`
+		MaxIdle  int      `json:"maxIdle"`
 	}
 	if err := source.Scan(&c); err != nil {
 		return nil, err
@@ -50,5 +53,13 @@ func newMySQL(source Scanner) (v interface{}, err error) {
 			return nil, err
 		}
 	}
-	return sql.Open(name, mu)
+
+	db, err := sql.Open(name, mu)
+	if err != nil {
+		return nil, err
+	}
+
+	db.SetMaxOpenConns(c.MaxOpen)
+	db.SetMaxIdleConns(int(math.Max(float64(c.MaxIdle), 1)))
+	return db, nil
 }
