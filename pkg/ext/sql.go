@@ -6,12 +6,44 @@ import (
 	"database/sql/driver"
 	"errors"
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
+	. "github.com/prometheus/client_golang/prometheus"
 	"github.com/sirupsen/logrus"
 	"go.opencensus.io/trace"
+)
+
+var (
+	dbUp = NewGaugeVec(GaugeOpts{
+		Name: "db_up",
+		Help: "数据库运行状态",
+	}, []string{"name"})
+	dbIdle = NewGaugeVec(GaugeOpts{
+		Name: "db_idle",
+		Help: "数据库闲置连接数",
+	}, []string{"name"})
+	dbInUse = NewGaugeVec(GaugeOpts{
+		Name: "db_in_use",
+		Help: "数据库活跃连接数",
+	}, []string{"name"})
+	dbOpenConnections = NewGaugeVec(GaugeOpts{
+		Name: "db_open_connections",
+		Help: "数据库开启的连接总数",
+	}, []string{"name"})
+	dbWaitCount = NewGaugeVec(GaugeOpts{
+		Name: "db_wait_count",
+		Help: "数据库等待中连接数",
+	}, []string{"name"})
+	dbWaitDuration = NewGaugeVec(GaugeOpts{
+		Name: "db_wait_duration",
+		Help: "数据库累计等待连接时间",
+	}, []string{"name"})
+
+	registerDBMetrics = &sync.Once{}
 )
 
 func RunTicker(name string, interval time.Duration, handler func()) {
@@ -33,11 +65,26 @@ func RunTicker(name string, interval time.Duration, handler func()) {
 	}()
 }
 
-func CheckDBAlive(interval time.Duration, db *sql.DB, name string) {
-	RunTicker(fmt.Sprintf("DB connection checker %s", name), interval, func() {
-		ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+func RegisterDbStats(interval time.Duration, db *sql.DB, name string) {
+	registerDBMetrics.Do(func() {
+		MustRegister(dbUp, dbIdle, dbInUse, dbOpenConnections, dbWaitCount, dbWaitDuration)
+	})
+
+	name = regexp.MustCompile(`\w+ \((\w+)\)`).FindStringSubmatch(name)[1]
+	labels := Labels{"name": name}
+	RunTicker(fmt.Sprintf("DB stats checker %s", name), interval, func() {
+		stats := db.Stats()
+		dbIdle.With(labels).Set(float64(stats.Idle))
+		dbInUse.With(labels).Set(float64(stats.InUse))
+		dbOpenConnections.With(labels).Set(float64(stats.OpenConnections))
+		dbWaitCount.With(labels).Set(float64(stats.WaitCount))
+		dbWaitDuration.With(labels).Set(float64(stats.WaitDuration))
+
+		ctx, _ := context.WithTimeout(context.Background(), time.Second)
 		if err := db.PingContext(ctx); err != nil {
-			logrus.WithError(err).Errorf("Broken %s connection", name)
+			dbUp.With(labels).Set(0)
+		} else {
+			dbUp.With(labels).Set(1)
 		}
 	})
 }

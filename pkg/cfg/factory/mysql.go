@@ -14,7 +14,7 @@ import (
 var MySQL = Option{
 	Name:      "MySQL",
 	OnCreate:  newMySQL,
-	OnCreated: checkDBAlive,
+	OnCreated: registerDBStats,
 }
 
 type mysqlLogger struct{}

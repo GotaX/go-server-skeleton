@@ -13,7 +13,7 @@ import (
 var Postgres = Option{
 	Name:      "Postgres",
 	OnCreate:  newPostgres,
-	OnCreated: checkDBAlive,
+	OnCreated: registerDBStats,
 }
 
 func newPostgres(source Scanner) (interface{}, error) {

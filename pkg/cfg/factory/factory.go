@@ -53,6 +53,6 @@ func sliceToValues(slice []string, sep string) url.Values {
 	return m
 }
 
-func checkDBAlive(name string, v interface{}) {
-	ext.CheckDBAlive(5*time.Second, v.(*sql.DB), name)
+func registerDBStats(name string, v interface{}) {
+	ext.RegisterDbStats(5*time.Second, v.(*sql.DB), name)
 }
