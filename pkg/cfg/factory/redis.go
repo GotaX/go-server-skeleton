@@ -3,7 +3,7 @@ package factory
 import (
 	"fmt"
 
-	driver "github.com/go-redis/redis"
+	driver "github.com/go-redis/redis/v7"
 )
 
 var Redis = Option{
