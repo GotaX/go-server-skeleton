@@ -3,6 +3,7 @@ package errors
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/golang/protobuf/proto"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
@@ -86,14 +87,24 @@ func (e FailedPreconditionError) Detail() proto.Message {
 }
 
 type BadRequestError struct {
-	Field       string
-	Description string
+	FieldViolations []*errdetails.BadRequest_FieldViolation `json:"field_violations"`
+}
+
+func NewBadRequestError(violations ...errdetails.BadRequest_FieldViolation) *BadRequestError {
+	arr := make([]*errdetails.BadRequest_FieldViolation, len(violations))
+	for i := range violations {
+		arr[i] = &violations[i]
+	}
+	return &BadRequestError{FieldViolations: arr}
 }
 
 func (e BadRequestError) Error() string {
-	return fmt.Sprintf(
-		"%s, field = %q, desc = %q",
-		ErrBadRequest, e.Field, e.Description)
+	sb := &strings.Builder{}
+	_, _ = fmt.Fprint(sb, ErrBadRequest, ";")
+	for _, v := range e.FieldViolations {
+		_, _ = fmt.Fprintf(sb, "field = %q, desc = %q; ", v.Field, v.Description)
+	}
+	return sb.String()
 }
 
 func (e BadRequestError) Unwrap() error {
@@ -101,8 +112,5 @@ func (e BadRequestError) Unwrap() error {
 }
 
 func (e BadRequestError) Detail() proto.Message {
-	return &errdetails.BadRequest_FieldViolation{
-		Field:       e.Field,
-		Description: e.Description,
-	}
+	return &errdetails.BadRequest{FieldViolations: e.FieldViolations}
 }
