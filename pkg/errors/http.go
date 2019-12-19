@@ -79,6 +79,7 @@ func Http(requestId string, err error) (r HttpResponse) {
 			&errdetails.DebugInfo{StackEntries: Stack(err)},
 			&errdetails.RequestInfo{RequestId: requestId},
 			Detail(err))
+		r.Error.Details = merge(r.Error.Details)
 		return
 	}
 
@@ -108,6 +109,25 @@ func details(arr ...interface{}) (values []HttpDetail) {
 		default:
 			logrus.Warn("Unsupported detail type %T", v)
 			continue
+		}
+	}
+	return
+}
+
+func merge(values []HttpDetail) (details []HttpDetail) {
+	details = []HttpDetail{
+		{Value: &errdetails.RequestInfo{}},
+		{Value: &errdetails.DebugInfo{}},
+	}
+
+	for _, detail := range values {
+		switch message := detail.Value.(type) {
+		case *errdetails.RequestInfo:
+			proto.Merge(details[0].Value, message)
+		case *errdetails.DebugInfo:
+			proto.Merge(details[1].Value, message)
+		default:
+			details = append(details, detail)
 		}
 	}
 	return

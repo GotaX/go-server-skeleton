@@ -6,7 +6,6 @@ import (
 	"log"
 
 	"github.com/golang/protobuf/proto"
-	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -145,7 +144,7 @@ func Detail(err error) []proto.Message {
 		details := err.Details()
 		messages := make([]proto.Message, 0, len(details))
 		for _, detail := range details {
-			if msg, ok := detail.(proto.Message); ok && isAcceptDetail(msg) {
+			if msg, ok := detail.(proto.Message); ok {
 				messages = append(messages, msg)
 			}
 		}
@@ -156,13 +155,4 @@ func Detail(err error) []proto.Message {
 		return Detail(sub)
 	}
 	return nil
-}
-
-func isAcceptDetail(msg proto.Message) bool {
-	switch msg.(type) {
-	case *errdetails.DebugInfo, *errdetails.RequestInfo:
-		return false
-	default:
-		return true
-	}
 }

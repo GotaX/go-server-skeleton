@@ -30,9 +30,7 @@ func Grpc(requestId string, err error) error {
 	}
 
 	for _, detail := range Detail(err) {
-		if isAcceptDetail(detail) {
-			details = append(details, detail)
-		}
+		details = append(details, detail)
 	}
 
 	st := status.New(code, Desc(err))
