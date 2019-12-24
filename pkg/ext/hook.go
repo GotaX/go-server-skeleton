@@ -121,7 +121,16 @@ func (h *LogStoreHook) Flush(force bool) error {
 	}
 
 	if err := h.store.PutLogs(lg); err != nil {
-		return xerrors.Errorf("while put log to LogStore: %v", err)
+		for _, message := range lg.Logs {
+			if err := h.store.PutLogs(&sls.LogGroup{
+				Topic:  &h.topic,
+				Source: &h.source,
+				Logs:   []*sls.Log{message},
+			}); err != nil {
+				log.Println("Discard log: ", err)
+				continue
+			}
+		}
 	}
 
 	log.Printf("Flush %v messages to LogStore (%v)", size, h.store.Name)
