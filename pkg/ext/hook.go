@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	batchSize     = 200
+	batchSize     = 100
 	flushInterval = 3 * time.Second
 )
 
