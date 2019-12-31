@@ -67,8 +67,9 @@ func Http(name, addr string, handler http.Handler) Endpoint {
 func newHealthEndpoint() func(*http.Request) bool {
 	endpoints := []string{"/metrics", "/debug/pprof"}
 	return func(req *http.Request) bool {
+		path := strings.TrimSuffix(req.URL.Path, "/")
 		for _, endpoint := range endpoints {
-			if strings.HasSuffix(req.URL.Path, endpoint) {
+			if strings.HasSuffix(path, endpoint) {
 				return true
 			}
 		}
