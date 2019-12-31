@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"regexp"
+	"strings"
 
 	"github.com/sirupsen/logrus"
 	"go.opencensus.io/plugin/ochttp"
@@ -53,10 +55,39 @@ func Http(name, addr string, handler http.Handler) Endpoint {
 		srv: &http.Server{
 			Addr: addr,
 			Handler: &ochttp.Handler{
-				Handler:     handler,
-				Propagation: ext.Propagation,
+				Handler:          handler,
+				Propagation:      ext.Propagation,
+				FormatSpanName:   newSpanNameFormatter(),
+				IsHealthEndpoint: newHealthEndpoint(),
 			},
 		},
+	}
+}
+
+func newHealthEndpoint() func(*http.Request) bool {
+	endpoints := []string{"/metrics", "/debug/pprof"}
+	return func(req *http.Request) bool {
+		for _, endpoint := range endpoints {
+			if strings.HasSuffix(req.URL.Path, endpoint) {
+				return true
+			}
+		}
+		return false
+	}
+}
+
+func newSpanNameFormatter() func(*http.Request) string {
+	const (
+		repl        = "/-"
+		defaultName = "/"
+	)
+	pattern := regexp.MustCompile(`/(\d+)`)
+
+	return func(req *http.Request) string {
+		if name := pattern.ReplaceAllString(req.URL.Path, repl); name != "" {
+			return name
+		}
+		return defaultName
 	}
 }
 
