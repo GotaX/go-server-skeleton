@@ -1,6 +1,7 @@
 package ext
 
 import (
+	"context"
 	"os"
 	"os/signal"
 	"sync"
@@ -49,4 +50,11 @@ func OnShutdown(hook func()) {
 
 func WaitShutdown() {
 	<-chQuitShutdown
+}
+
+func WaitShutdownContext(ctx context.Context) {
+	select {
+	case <-ctx.Done():
+	case <-chQuitShutdown:
+	}
 }
