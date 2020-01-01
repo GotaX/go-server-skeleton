@@ -25,6 +25,7 @@ func newLog(source Scanner) (interface{}, error) {
 		Topic    string   `json:"topic"`
 		Extra    []string `json:"extra"`
 		Default  bool     `json:"default"`
+		Async    bool     `json:"async"`
 	}
 	if err := source.Scan(&lc); err != nil {
 		return nil, err
@@ -32,7 +33,7 @@ func newLog(source Scanner) (interface{}, error) {
 
 	var (
 		logger *logrus.Logger
-		lsHook *ext.LogStoreHook
+		lsHook logrus.Hook
 	)
 	if lc.Default {
 		logger = logrus.StandardLogger()
@@ -64,7 +65,23 @@ func newLog(source Scanner) (interface{}, error) {
 		extra   = sliceToMap(lc.Extra, "=")
 		host, _ = os.Hostname()
 	)
-	lsHook, err = ext.NewLogStoreHook(lc.Endpoint, lc.Key, lc.Secret, lc.Project, lc.Name, lc.Topic, host, extra)
+
+	c := ext.LogStoreConfig{
+		Endpoint:     lc.Endpoint,
+		AccessKey:    lc.Key,
+		AccessSecret: lc.Secret,
+		Project:      lc.Project,
+		Store:        lc.Name,
+		Topic:        lc.Topic,
+		Source:       host,
+		Extra:        extra,
+	}
+
+	if lc.Async {
+		lsHook, err = ext.NewAsyncLogStoreHook(c)
+	} else {
+		lsHook, err = ext.NewLogStoreHook(c)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -80,8 +97,11 @@ func newLog(source Scanner) (interface{}, error) {
 func flushLog(v interface{}) {
 	for _, hooks := range v.(*logrus.Logger).Hooks {
 		for _, h := range hooks {
-			if h, ok := h.(*ext.LogStoreHook); ok {
+			switch h := h.(type) {
+			case *ext.LogStoreHook:
 				_ = h.Flush(true)
+			case *ext.AsyncLogStoreHook:
+				_ = h.Close()
 			}
 		}
 	}

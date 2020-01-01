@@ -16,12 +16,31 @@ import (
 const (
 	batchSize     = 100
 	flushInterval = 3 * time.Second
+	flushTimeout  = 500 * time.Millisecond
+	keyMessage    = "message"
+	keyLevel      = "level"
 )
 
 var (
-	keyMessage = "message"
-	keyLevel   = "level"
+	HookedLevels = []logrus.Level{
+		logrus.PanicLevel,
+		logrus.FatalLevel,
+		logrus.ErrorLevel,
+		logrus.WarnLevel,
+		logrus.InfoLevel,
+	}
 )
+
+type LogStoreConfig struct {
+	Endpoint     string                 `json:"endpoint"`
+	AccessKey    string                 `json:"access_key"`
+	AccessSecret string                 `json:"access_secret"`
+	Project      string                 `json:"project"`
+	Store        string                 `json:"store"`
+	Topic        string                 `json:"topic"`
+	Source       string                 `json:"source"`
+	Extra        map[string]interface{} `json:"extra"`
+}
 
 type Message struct {
 	Time     time.Time
@@ -38,29 +57,29 @@ type LogStoreHook struct {
 	flushTime time.Time
 }
 
-func NewLogStoreHook(endpoint, key, secret, projectName, storeName, topic, source string, extra map[string]interface{}) (*LogStoreHook, error) {
+func NewLogStoreHook(c LogStoreConfig) (*LogStoreHook, error) {
 	client := &sls.Client{
-		Endpoint:        endpoint,
-		AccessKeyID:     key,
-		AccessKeySecret: secret,
+		Endpoint:        c.Endpoint,
+		AccessKeyID:     c.AccessKey,
+		AccessKeySecret: c.AccessSecret,
 	}
 
-	project, err := client.GetProject(projectName)
+	project, err := client.GetProject(c.Project)
 	if err != nil {
-		return nil, xerrors.Errorf("unknown LogStore project %v: %v", projectName, err)
+		return nil, xerrors.Errorf("unknown LogStore project %v: %v", c.Project, err)
 	}
 
-	store, err := project.GetLogStore(storeName)
+	store, err := project.GetLogStore(c.Store)
 	if err != nil {
-		return nil, xerrors.Errorf("unknown LogStore name %v: %v", storeName, err)
+		return nil, xerrors.Errorf("unknown LogStore name %v: %v", c.Store, err)
 	}
 
 	return &LogStoreHook{
 		mu:        &sync.Mutex{},
 		store:     store,
-		topic:     topic,
-		source:    source,
-		extra:     extra,
+		topic:     c.Topic,
+		source:    c.Source,
+		extra:     c.Extra,
 		messages:  make([]Message, 0, batchSize),
 		flushTime: time.Now(),
 	}, nil
@@ -140,9 +159,7 @@ func (h *LogStoreHook) Flush(force bool) error {
 	return nil
 }
 
-func (h *LogStoreHook) Levels() []logrus.Level {
-	return []logrus.Level{logrus.PanicLevel, logrus.FatalLevel, logrus.ErrorLevel, logrus.WarnLevel, logrus.InfoLevel}
-}
+func (h *LogStoreHook) Levels() []logrus.Level { return HookedLevels }
 
 func toString(v interface{}) string {
 	switch vv := v.(type) {
