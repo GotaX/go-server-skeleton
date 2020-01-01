@@ -3,6 +3,7 @@ package ext
 import (
 	"log"
 	"strconv"
+	"sync"
 	"time"
 
 	sls "github.com/aliyun/aliyun-log-go-sdk"
@@ -21,6 +22,8 @@ type AsyncLogStoreHook struct {
 	topic        string
 	source       string
 	extra        map[string]interface{}
+	onClose      *sync.Once
+	onStart      *sync.Once
 }
 
 func NewAsyncLogStoreHook(c LogStoreConfig) (logrus.Hook, error) {
@@ -49,8 +52,10 @@ func NewAsyncLogStoreHook(c LogStoreConfig) (logrus.Hook, error) {
 		topic:        c.Topic,
 		source:       c.Source,
 		extra:        c.Extra,
+		onClose:      &sync.Once{},
+		onStart:      &sync.Once{},
 	}
-	go obj.start()
+	go obj.onStart.Do(obj.start)
 	return obj, nil
 }
 
@@ -101,8 +106,10 @@ Loop:
 }
 
 func (h *AsyncLogStoreHook) Close() error {
-	close(h.chMsg)
-	<-chQuit
+	h.onClose.Do(func() {
+		close(h.chMsg)
+		<-chQuit
+	})
 	return nil
 }
 
