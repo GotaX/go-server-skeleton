@@ -11,13 +11,13 @@ import (
 )
 
 var (
-	hooks  []func()
-	mu     sync.Mutex
-	chQuit chan struct{}
+	hooks          []func()
+	mu             sync.Mutex
+	chQuitShutdown chan struct{}
 )
 
 func init() {
-	chQuit = make(chan struct{})
+	chQuitShutdown = make(chan struct{})
 	chSig := make(chan os.Signal, 1)
 
 	// sigterm signal sent from kubernetes
@@ -37,7 +37,7 @@ func init() {
 
 		logrus.Infof("Finish shutdown in %v",
 			time.Since(st).Truncate(time.Millisecond))
-		close(chQuit)
+		close(chQuitShutdown)
 	}()
 }
 
@@ -48,5 +48,5 @@ func OnShutdown(hook func()) {
 }
 
 func WaitShutdown() {
-	<-chQuit
+	<-chQuitShutdown
 }

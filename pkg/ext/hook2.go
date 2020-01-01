@@ -102,13 +102,13 @@ Loop:
 	}
 
 	flush()
-	close(chQuit)
+	close(h.chQuit)
 }
 
 func (h *AsyncLogStoreHook) Close() error {
 	h.onClose.Do(func() {
 		close(h.chMsg)
-		<-chQuit
+		<-h.chQuit
 	})
 	return nil
 }
