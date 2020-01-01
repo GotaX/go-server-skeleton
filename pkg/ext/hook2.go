@@ -114,6 +114,12 @@ func (h *AsyncLogStoreHook) Close() error {
 }
 
 func (h *AsyncLogStoreHook) Fire(entry *logrus.Entry) error {
+	defer func() {
+		if err := recover(); err != nil {
+			entry.Log(logrus.DebugLevel)
+		}
+	}()
+
 	select {
 	case h.chMsg <- h.toMessage(entry):
 	case <-time.After(h.flushTimeout):
