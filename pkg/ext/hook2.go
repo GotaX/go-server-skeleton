@@ -70,20 +70,32 @@ func (h *AsyncLogStoreHook) start() {
 		startTime := time.Now()
 
 		h.flush(messages)
-		messages = messages[:0]
-		lastFlushTime = time.Now()
 
 		log.Printf("[%v] Flush %d messages to %q",
 			time.Since(startTime).Truncate(time.Millisecond),
 			len(messages), h.remote.Name)
+
+		messages = messages[:0]
+		lastFlushTime = time.Now()
 	}
 
-	for message := range h.chMsg {
-		messages = append(messages, message)
+Loop:
+	for {
+		select {
+		case <-time.After(h.interval / 10):
+			// Check flush
+		case message, ok := <-h.chMsg:
+			if !ok {
+				break Loop
+			}
+			messages = append(messages, message)
+		}
+
 		if needFlush() {
 			flush()
 		}
 	}
+
 	flush()
 	close(chQuit)
 }
