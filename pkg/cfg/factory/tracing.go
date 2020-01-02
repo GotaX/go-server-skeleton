@@ -99,6 +99,11 @@ func newJaegerExporter(serviceName, endpoint string) (trace.Exporter, error) {
 		AgentEndpoint: endpoint + ":6831",
 		Process: jaeger.Process{
 			ServiceName: serviceName,
+			Tags: []jaeger.Tag{
+				jaeger.StringTag("hostname", ext.HostName()),
+				jaeger.StringTag("ip", ext.HostIPStr()),
+				jaeger.StringTag("version", ext.Version()),
+			},
 		},
 	})
 }

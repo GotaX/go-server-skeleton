@@ -1,8 +1,6 @@
 package factory
 
 import (
-	"os"
-
 	"github.com/sirupsen/logrus"
 
 	"github.com/GotaX/go-server-skeleton/pkg/ext"
@@ -61,11 +59,6 @@ func newLog(source Scanner) (interface{}, error) {
 	}
 
 	// Register hook
-	var (
-		extra   = sliceToMap(lc.Extra, "=")
-		host, _ = os.Hostname()
-	)
-
 	c := ext.LogStoreConfig{
 		Endpoint:     lc.Endpoint,
 		AccessKey:    lc.Key,
@@ -73,9 +66,11 @@ func newLog(source Scanner) (interface{}, error) {
 		Project:      lc.Project,
 		Store:        lc.Name,
 		Topic:        lc.Topic,
-		Source:       host,
-		Extra:        extra,
+		Source:       ext.HostName(),
+		Extra:        sliceToMap(lc.Extra, "="),
 	}
+
+	c.Extra["version"] = ext.Version()
 
 	if lc.Async {
 		lsHook, err = ext.NewAsyncLogStoreHook(c)
@@ -89,7 +84,7 @@ func newLog(source Scanner) (interface{}, error) {
 
 	logrus.Debugf(
 		"Setup logrus, project: %v, store: %v, topic: %v, host: %v, extra: %v",
-		lc.Project, lc.Name, lc.Topic, host, extra)
+		c.Project, c.Store, c.Topic, c.Source, c.Extra)
 
 	return logger, nil
 }
