@@ -31,3 +31,7 @@ func Version() string {
 		return "dev"
 	}
 }
+
+func SetVersion(version string) {
+	_ = os.Setenv(EnvAppVersion, version)
+}
