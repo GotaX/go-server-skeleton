@@ -2,6 +2,10 @@ package ext
 
 import "os"
 
+const (
+	EnvAppVersion = "APP_VERSION"
+)
+
 func HostName() string {
 	if host, err := os.Hostname(); err == nil {
 		return host
@@ -21,7 +25,7 @@ func HostIPStr() string {
 }
 
 func Version() string {
-	if version, ok := os.LookupEnv("APP_VERSION"); ok {
+	if version, ok := os.LookupEnv(EnvAppVersion); ok {
 		return version
 	} else {
 		return "dev"
