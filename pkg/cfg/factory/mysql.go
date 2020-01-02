@@ -35,6 +35,7 @@ func newMySQL(source Scanner) (v interface{}, err error) {
 		Params   []string `json:"params"`
 		MaxOpen  int      `json:"maxOpen"`
 		MaxIdle  int      `json:"maxIdle"`
+		Tracing  bool     `json:"tracing"`
 	}
 	if err := source.Scan(&c); err != nil {
 		return nil, err
@@ -48,7 +49,7 @@ func newMySQL(source Scanner) (v interface{}, err error) {
 	}
 
 	name := "mysql"
-	if IsDefaultEnv() {
+	if c.Tracing {
 		if name, err = ext.RegisterTracingDriver(name); err != nil {
 			return nil, err
 		}

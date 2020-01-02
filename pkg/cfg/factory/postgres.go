@@ -16,7 +16,7 @@ var Postgres = Option{
 	OnCreated: registerDBStats,
 }
 
-func newPostgres(source Scanner) (interface{}, error) {
+func newPostgres(source Scanner) (v interface{}, err error) {
 	var c struct {
 		Host     string   `json:"host"`
 		Port     string   `json:"port"`
@@ -26,6 +26,7 @@ func newPostgres(source Scanner) (interface{}, error) {
 		Params   []string `json:"params"`
 		MaxOpen  int      `json:"maxOpen"`
 		MaxIdle  int      `json:"maxIdle"`
+		Tracing  bool     `json:"tracing"`
 	}
 	if err := source.Scan(&c); err != nil {
 		return nil, err
@@ -38,9 +39,11 @@ func newPostgres(source Scanner) (interface{}, error) {
 		mu += "?" + values.Encode()
 	}
 
-	name, err := ext.RegisterTracingDriver("postgres")
-	if err != nil {
-		return nil, err
+	name := "postgres"
+	if c.Tracing {
+		if name, err = ext.RegisterTracingDriver(name); err != nil {
+			return nil, err
+		}
 	}
 
 	db, err := sql.Open(name, mu)
