@@ -1,6 +1,10 @@
 package factory
 
 import (
+	"context"
+	"time"
+
+	slsh "github.com/GotaX/logrus-aliyun-log-hook"
 	"github.com/sirupsen/logrus"
 
 	"github.com/GotaX/go-server-skeleton/pkg/ext"
@@ -31,7 +35,6 @@ func newLog(source Scanner) (interface{}, error) {
 
 	var (
 		logger *logrus.Logger
-		lsHook logrus.Hook
 	)
 	if lc.Default {
 		logger = logrus.StandardLogger()
@@ -59,33 +62,23 @@ func newLog(source Scanner) (interface{}, error) {
 	}
 
 	// Register hook
-	c := ext.LogStoreConfig{
+
+	extra := sliceToMap(lc.Extra, "=")
+	extra["version"] = ext.Version()
+
+	hook, err := slsh.New(slsh.Config{
 		Endpoint:     lc.Endpoint,
 		AccessKey:    lc.Key,
 		AccessSecret: lc.Secret,
 		Project:      lc.Project,
 		Store:        lc.Name,
 		Topic:        lc.Topic,
-		Source:       ext.HostName(),
-		Extra:        sliceToMap(lc.Extra, "="),
-	}
-
-	c.Extra["version"] = ext.Version()
-
-	if lc.Async {
-		lsHook, err = ext.NewAsyncLogStoreHook(c)
-	} else {
-		lsHook, err = ext.NewLogStoreHook(c)
-	}
+		Extra:        extra,
+	})
 	if err != nil {
 		return nil, err
 	}
-	logger.AddHook(lsHook)
-
-	logrus.Debugf(
-		"Setup logrus, project: %v, store: %v, topic: %v, host: %v, extra: %v",
-		c.Project, c.Store, c.Topic, c.Source, c.Extra)
-
+	logger.AddHook(hook)
 	return logger, nil
 }
 
@@ -93,10 +86,9 @@ func flushLog(v interface{}) {
 	for _, hooks := range v.(*logrus.Logger).Hooks {
 		for _, h := range hooks {
 			switch h := h.(type) {
-			case *ext.LogStoreHook:
-				_ = h.Flush(true)
-			case *ext.AsyncLogStoreHook:
-				_ = h.Close()
+			case *slsh.Hook:
+				ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+				_ = h.CloseContext(ctx)
 			}
 		}
 	}

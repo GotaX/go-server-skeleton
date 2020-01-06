@@ -5,20 +5,19 @@ go 1.13
 require (
 	contrib.go.opencensus.io/exporter/jaeger v0.2.0
 	contrib.go.opencensus.io/exporter/zipkin v0.1.1
+	github.com/GotaX/logrus-aliyun-log-hook v1.0.0-rc2
 	github.com/aliyun/alibaba-cloud-sdk-go v1.60.268
-	github.com/aliyun/aliyun-log-go-sdk v0.1.5
 	github.com/aliyun/aliyun-oss-go-sdk v2.0.4+incompatible
 	github.com/aliyun/aliyun-tablestore-go-sdk v4.1.3+incompatible
 	github.com/aliyun/fc-go-sdk v0.0.0-20190905094252-42fe777758b0
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
-	github.com/frankban/quicktest v1.7.2 // indirect
 	github.com/gin-contrib/gzip v0.0.1
 	github.com/gin-gonic/gin v1.5.0
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-redis/redis/v7 v7.0.0-beta.4
 	github.com/go-sql-driver/mysql v1.4.1
-	github.com/gogo/protobuf v1.3.1
+	github.com/gogo/protobuf v1.3.1 // indirect
 	github.com/golang/groupcache v0.0.0-20191027212112-611e8accdfc9 // indirect
 	github.com/golang/protobuf v1.3.2
 	github.com/grpc-ecosystem/go-grpc-middleware v1.1.0
@@ -29,7 +28,6 @@ require (
 	github.com/mattn/go-isatty v0.0.10 // indirect
 	github.com/micro/go-micro v1.16.0
 	github.com/openzipkin/zipkin-go v0.2.2
-	github.com/pierrec/lz4 v2.3.0+incompatible // indirect
 	github.com/prometheus/client_golang v1.2.1
 	github.com/prometheus/procfs v0.0.8 // indirect
 	github.com/rs/xid v1.2.1

@@ -35,8 +35,8 @@ func IsDefaultEnv() bool {
 	return profile == "" || profile == DefaultProfile
 }
 
-func sliceToMap(slice []string, sep string) map[string]interface{} {
-	m := make(map[string]interface{})
+func sliceToMap(slice []string, sep string) map[string]string {
+	m := make(map[string]string)
 	for _, v := range slice {
 		kv := strings.SplitN(v, sep, 2)
 		m[kv[0]] = kv[1]
