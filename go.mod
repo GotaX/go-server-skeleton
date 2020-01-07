@@ -5,7 +5,7 @@ go 1.13
 require (
 	contrib.go.opencensus.io/exporter/jaeger v0.2.0
 	contrib.go.opencensus.io/exporter/zipkin v0.1.1
-	github.com/GotaX/logrus-aliyun-log-hook v1.0.0-rc3
+	github.com/GotaX/logrus-aliyun-log-hook v1.0.0
 	github.com/aliyun/alibaba-cloud-sdk-go v1.60.268
 	github.com/aliyun/aliyun-oss-go-sdk v2.0.4+incompatible
 	github.com/aliyun/aliyun-tablestore-go-sdk v4.1.3+incompatible

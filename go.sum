@@ -26,6 +26,8 @@ github.com/GotaX/logrus-aliyun-log-hook v1.0.0-rc2 h1:wIWpLiVUTqafuWg9fgIY2gpFPm
 github.com/GotaX/logrus-aliyun-log-hook v1.0.0-rc2/go.mod h1:gxQFaGO4S5z9dl1A6wMWutBNYFfKAVCDhUI/NoQjXNs=
 github.com/GotaX/logrus-aliyun-log-hook v1.0.0-rc3 h1:hm5TCo8TSihym+FtCrhXBnwAFpQUB9omd+DWSHL84m4=
 github.com/GotaX/logrus-aliyun-log-hook v1.0.0-rc3/go.mod h1:gxQFaGO4S5z9dl1A6wMWutBNYFfKAVCDhUI/NoQjXNs=
+github.com/GotaX/logrus-aliyun-log-hook v1.0.0 h1:BV/ldJs4vCcQAYE7iFJBCjsuKy/oNxY5l55sR354F0c=
+github.com/GotaX/logrus-aliyun-log-hook v1.0.0/go.mod h1:gxQFaGO4S5z9dl1A6wMWutBNYFfKAVCDhUI/NoQjXNs=
 github.com/Microsoft/go-winio v0.4.14/go.mod h1:qXqCSQ3Xa7+6tgxaGTIe4Kpcdsi+P8jBhyzoq1bpyYA=
 github.com/Microsoft/hcsshim v0.8.6/go.mod h1:Op3hHsoHPAvb6lceZHDtd9OkTew38wNoXnJs8iY7rUg=
 github.com/OpenDNS/vegadns2client v0.0.0-20180418235048-a3fa4a771d87/go.mod h1:iGLljf5n9GjT6kc0HBvyI1nOKnGQbNB66VzSNbK5iks=
