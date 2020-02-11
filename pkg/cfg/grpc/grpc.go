@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc/codes"
 
 	"github.com/GotaX/go-server-skeleton/pkg/cfg"
-	"github.com/GotaX/go-server-skeleton/pkg/ext"
+	"github.com/GotaX/go-server-skeleton/pkg/ext/grpc"
 )
 
 var Option = cfg.Option{
@@ -36,10 +36,10 @@ func newGrpc(source cfg.Scanner) (interface{}, error) {
 		}),
 		driver.WithChainStreamInterceptor(
 			retry.StreamClientInterceptor(opts...),
-			ext.StreamClientErrorHandler(),
+			grpc.StreamClientErrorHandler(),
 		),
 		driver.WithChainUnaryInterceptor(
 			retry.UnaryClientInterceptor(opts...),
-			ext.UnaryClientErrorHandler(),
+			grpc.UnaryClientErrorHandler(),
 		))
 }
