@@ -1,4 +1,4 @@
-package factory
+package grpc
 
 import (
 	"time"
@@ -9,15 +9,16 @@ import (
 	driver "google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 
+	"github.com/GotaX/go-server-skeleton/pkg/cfg"
 	"github.com/GotaX/go-server-skeleton/pkg/ext"
 )
 
-var GRPC = Option{
+var Option = cfg.Option{
 	Name:     "GRPC",
 	OnCreate: newGrpc,
 }
 
-func newGrpc(source Scanner) (interface{}, error) {
+func newGrpc(source cfg.Scanner) (interface{}, error) {
 	var target string
 	if err := source.Scan(&target); err != nil {
 		return nil, err

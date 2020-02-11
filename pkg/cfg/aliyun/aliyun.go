@@ -1,17 +1,19 @@
-package factory
+package aliyun
 
 import (
 	driver "github.com/aliyun/alibaba-cloud-sdk-go/sdk"
 	"github.com/aliyun/alibaba-cloud-sdk-go/sdk/auth/credentials"
+
+	"github.com/GotaX/go-server-skeleton/pkg/cfg"
 )
 
-var AliYun = Option{
+var Option = cfg.Option{
 	Name:      "AliYun",
 	OnCreate:  newAliYun,
 	OnDestroy: func(v interface{}) { v.(*driver.Client).Shutdown() },
 }
 
-func newAliYun(source Scanner) (interface{}, error) {
+func newAliYun(source cfg.Scanner) (interface{}, error) {
 	var c struct {
 		Region       string `json:"region"`
 		AccessKey    string `json:"accessKey"`

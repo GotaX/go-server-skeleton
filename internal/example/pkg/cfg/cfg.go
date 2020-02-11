@@ -7,7 +7,9 @@ import (
 	"github.com/micro/go-micro/config/source/env"
 	"github.com/sirupsen/logrus"
 
-	"github.com/GotaX/go-server-skeleton/pkg/cfg/factory"
+	"github.com/GotaX/go-server-skeleton/pkg/cfg"
+	logrus2 "github.com/GotaX/go-server-skeleton/pkg/cfg/logrus"
+	"github.com/GotaX/go-server-skeleton/pkg/cfg/tracing"
 	"github.com/GotaX/go-server-skeleton/pkg/ext"
 	"github.com/GotaX/go-server-skeleton/pkg/ext/config/spring"
 )
@@ -19,22 +21,22 @@ const (
 )
 
 var (
-	LogGrpc factory.ProviderMethod
+	LogGrpc cfg.ProviderMethod
 )
 
 func init() {
 	name, profile := loadConfig()
 
-	_ = register("log", factory.Log, false)
-	LogGrpc = register("logGrpc", factory.Log, false)
-	_ = register("trace", factory.Tracing, false)
+	_ = register("log", logrus2.Option, false)
+	LogGrpc = register("logGrpc", logrus2.Option, false)
+	_ = register("trace", tracing.Option, false)
 
 	logrus.Infof("Init over, profile: %s-%s\n", name, profile)
 }
 
-func register(name string, create factory.Option, lazy bool) factory.ProviderMethod {
+func register(name string, create cfg.Option, lazy bool) cfg.ProviderMethod {
 	source := config.Get(strings.Split(name, ".")...)
-	return factory.Register(name, create, source, lazy)
+	return cfg.Register(name, create, source, lazy)
 }
 
 func loadConfig() (name, profile string) {

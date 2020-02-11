@@ -1,17 +1,19 @@
-package factory
+package redis
 
 import (
 	"fmt"
 
 	driver "github.com/go-redis/redis/v7"
+
+	"github.com/GotaX/go-server-skeleton/pkg/cfg"
 )
 
-var Redis = Option{
+var Option = cfg.Option{
 	Name:     "Redis",
 	OnCreate: newRedis,
 }
 
-func newRedis(source Scanner) (interface{}, error) {
+func newRedis(source cfg.Scanner) (interface{}, error) {
 	var c struct {
 		Db       int    `json:"db"`
 		Host     string `json:"host"`

@@ -1,20 +1,22 @@
-package factory
+package amqp
 
 import (
 	"fmt"
 
 	"github.com/sirupsen/logrus"
 	driver "github.com/streadway/amqp"
+
+	"github.com/GotaX/go-server-skeleton/pkg/cfg"
 )
 
-var AMQP = Option{
+var Option = cfg.Option{
 	Name:      "AMQP",
 	OnCreate:  newAmqp,
 	OnCreated: logAmqpError,
 	OnDestroy: func(v interface{}) { _ = v.(*driver.Connection).Close() },
 }
 
-func newAmqp(source Scanner) (interface{}, error) {
+func newAmqp(source cfg.Scanner) (interface{}, error) {
 	var c struct {
 		Host     string `json:"host"`
 		Port     string `json:"port"`

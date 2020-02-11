@@ -1,15 +1,17 @@
-package factory
+package alifc
 
 import (
 	driver "github.com/aliyun/fc-go-sdk"
+
+	"github.com/GotaX/go-server-skeleton/pkg/cfg"
 )
 
-var AliFc = Option{
+var Option = cfg.Option{
 	Name:     "AliFc",
 	OnCreate: newFc,
 }
 
-func newFc(source Scanner) (interface{}, error) {
+func newFc(source cfg.Scanner) (interface{}, error) {
 	var c struct {
 		Id       string `json:"id"`
 		Secret   string `json:"secret"`

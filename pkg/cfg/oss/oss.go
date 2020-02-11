@@ -1,17 +1,19 @@
-package factory
+package oss
 
 import (
 	"net/http"
 
 	driver "github.com/aliyun/aliyun-oss-go-sdk/oss"
+
+	"github.com/GotaX/go-server-skeleton/pkg/cfg"
 )
 
-var OSS = Option{
+var Option = cfg.Option{
 	Name:     "OSS",
 	OnCreate: newOss,
 }
 
-func newOss(source Scanner) (interface{}, error) {
+func newOss(source cfg.Scanner) (interface{}, error) {
 	var c struct {
 		Id       string `json:"id"`
 		Secret   string `json:"secret"`

@@ -1,4 +1,4 @@
-package factory
+package tracing
 
 import (
 	"net/http"
@@ -13,15 +13,16 @@ import (
 	"go.opencensus.io/trace"
 	"golang.org/x/xerrors"
 
+	"github.com/GotaX/go-server-skeleton/pkg/cfg"
 	"github.com/GotaX/go-server-skeleton/pkg/ext"
 )
 
-var Tracing = Option{
+var Option = cfg.Option{
 	Name:     "Tracing",
 	OnCreate: newTracing,
 }
 
-func newTracing(source Scanner) (interface{}, error) {
+func newTracing(source cfg.Scanner) (interface{}, error) {
 	var c struct {
 		ServiceName string `json:"serviceName"`
 		Endpoint    string `json:"endpoint"`
@@ -36,7 +37,7 @@ func newTracing(source Scanner) (interface{}, error) {
 		exporter trace.Exporter
 		err      error
 	)
-	if !IsDefaultEnv() {
+	if !cfg.IsDefaultEnv() {
 		switch c.Type {
 		case "jaeger":
 			exporter, err = newJaegerExporter(c.ServiceName, c.Jaeger)
@@ -58,7 +59,7 @@ func newTracing(source Scanner) (interface{}, error) {
 			DefaultSampler: trace.AlwaysSample(),
 		})
 	} else {
-		logrus.Warn("Tracing exporter not set")
+		logrus.Warn("Option exporter not set")
 	}
 
 	http.DefaultClient.Transport = &ochttp.Transport{
