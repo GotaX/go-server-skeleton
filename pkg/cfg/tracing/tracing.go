@@ -15,6 +15,7 @@ import (
 
 	"github.com/GotaX/go-server-skeleton/pkg/cfg"
 	"github.com/GotaX/go-server-skeleton/pkg/ext"
+	"github.com/GotaX/go-server-skeleton/pkg/ext/tracing"
 )
 
 var Option = cfg.Option{
@@ -41,10 +42,10 @@ func newTracing(source cfg.Scanner) (interface{}, error) {
 		switch c.Type {
 		case "jaeger":
 			exporter, err = newJaegerExporter(c.ServiceName, c.Jaeger)
-			ext.Propagation = &ext.JaegerFormat{}
+			tracing.Propagation = &tracing.JaegerFormat{}
 		case "zipkin":
 			exporter, _, err = newZipkinExporter(c.ServiceName, c.Endpoint)
-			ext.Propagation = &tracecontext.HTTPFormat{}
+			tracing.Propagation = &tracecontext.HTTPFormat{}
 		}
 	} else {
 		exporter = &PrintExporter{logger: logrus.StandardLogger()}
@@ -63,7 +64,7 @@ func newTracing(source cfg.Scanner) (interface{}, error) {
 	}
 
 	http.DefaultClient.Transport = &ochttp.Transport{
-		Propagation:    ext.Propagation,
+		Propagation:    tracing.Propagation,
 		FormatSpanName: formatSpanName,
 	}
 	return exporter, nil

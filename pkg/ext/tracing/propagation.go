@@ -1,4 +1,4 @@
-package ext
+package tracing
 
 import "go.opencensus.io/trace/propagation"
 

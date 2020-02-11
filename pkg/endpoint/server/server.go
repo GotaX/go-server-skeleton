@@ -13,7 +13,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/GotaX/go-server-skeleton/pkg/errors"
-	"github.com/GotaX/go-server-skeleton/pkg/ext"
+	"github.com/GotaX/go-server-skeleton/pkg/ext/tracing"
 )
 
 const (
@@ -41,7 +41,7 @@ func Gin(router func(gin.IRouter)) http.Handler {
 
 func genRequestId() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		info := ext.GetRequestInfo(ctx.Request.Context())
+		info := tracing.GetRequestInfo(ctx.Request.Context())
 		ctx.Set(keyReqId, info.String())
 		ctx.Next()
 	}
