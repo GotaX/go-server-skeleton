@@ -1,4 +1,4 @@
-package ext
+package shutdown
 
 import (
 	"context"
@@ -42,17 +42,17 @@ func init() {
 	}()
 }
 
-func OnShutdown(hook func()) {
+func AddHook(hook func()) {
 	mu.Lock()
 	hooks = append(hooks, hook)
 	mu.Unlock()
 }
 
-func WaitShutdown() {
+func Wait() {
 	<-chQuitShutdown
 }
 
-func WaitShutdownContext(ctx context.Context) {
+func WaitContext(ctx context.Context) {
 	select {
 	case <-ctx.Done():
 	case <-chQuitShutdown:

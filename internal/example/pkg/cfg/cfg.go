@@ -10,8 +10,8 @@ import (
 	"github.com/GotaX/go-server-skeleton/pkg/cfg"
 	logrus2 "github.com/GotaX/go-server-skeleton/pkg/cfg/logrus"
 	"github.com/GotaX/go-server-skeleton/pkg/cfg/tracing"
-	"github.com/GotaX/go-server-skeleton/pkg/ext"
 	"github.com/GotaX/go-server-skeleton/pkg/ext/config/spring"
+	"github.com/GotaX/go-server-skeleton/pkg/ext/shutdown"
 )
 
 const (
@@ -43,7 +43,7 @@ func loadConfig() (name, profile string) {
 	if err := config.Load(env.NewSource()); err != nil {
 		logrus.Fatal(err)
 	}
-	ext.OnShutdown(func() {
+	shutdown.AddHook(func() {
 		entry := logrus.WithField("name", "ConfigWatcher")
 		if err := config.DefaultConfig.Close(); err != nil {
 			entry.WithError(err).Warn("Fail to stop")

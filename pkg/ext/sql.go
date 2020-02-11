@@ -15,6 +15,8 @@ import (
 	. "github.com/prometheus/client_golang/prometheus"
 	"github.com/sirupsen/logrus"
 	"go.opencensus.io/trace"
+
+	"github.com/GotaX/go-server-skeleton/pkg/ext/shutdown"
 )
 
 var (
@@ -50,7 +52,7 @@ func RunTicker(name string, interval time.Duration, handler func()) {
 	ticker := time.NewTicker(interval)
 	ctx, cancel := context.WithCancel(context.Background())
 
-	OnShutdown(cancel)
+	shutdown.AddHook(cancel)
 
 	go func() {
 		defer logrus.WithField("name", "Ticker ("+name+")").Debug("Stopped")
