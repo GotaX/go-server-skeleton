@@ -8,7 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/GotaX/go-server-skeleton/pkg/cfg"
-	"github.com/GotaX/go-server-skeleton/pkg/ext"
+	"github.com/GotaX/go-server-skeleton/pkg/ext/app"
 )
 
 var Option = cfg.Option{
@@ -65,7 +65,7 @@ func newLog(source cfg.Scanner) (interface{}, error) {
 	// Register hook
 
 	extra := cfg.SliceToMap(lc.Extra, "=")
-	extra["version"] = ext.Version()
+	extra["version"] = app.Version()
 
 	hook, err := slsh.New(slsh.Config{
 		Endpoint:     lc.Endpoint,

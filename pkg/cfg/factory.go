@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/GotaX/go-server-skeleton/pkg/ext"
+	"github.com/GotaX/go-server-skeleton/pkg/cfg/rds"
 )
 
 const (
@@ -54,5 +54,5 @@ func SliceToValues(slice []string, sep string) url.Values {
 }
 
 func RegisterDBStats(name string, v interface{}) {
-	ext.RegisterDbStats(5*time.Second, v.(*sql.DB), name)
+	rds.RegisterDbStats(5*time.Second, v.(*sql.DB), name)
 }

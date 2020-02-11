@@ -14,7 +14,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/GotaX/go-server-skeleton/pkg/cfg"
-	"github.com/GotaX/go-server-skeleton/pkg/ext"
+	"github.com/GotaX/go-server-skeleton/pkg/ext/app"
 	"github.com/GotaX/go-server-skeleton/pkg/ext/tracing"
 )
 
@@ -81,7 +81,7 @@ func newZipkinExporter(serviceName, endpoint string) (trace.Exporter, func(), er
 	onError := func(err error) (trace.Exporter, func(), error) {
 		return nil, nil, xerrors.Errorf("while newZipkinExporter: %w", err)
 	}
-	ip, err := ext.HostIP()
+	ip, err := app.HostIP()
 	if err != nil {
 		return onError(err)
 	}
@@ -102,9 +102,9 @@ func newJaegerExporter(serviceName, endpoint string) (trace.Exporter, error) {
 		Process: jaeger.Process{
 			ServiceName: serviceName,
 			Tags: []jaeger.Tag{
-				jaeger.StringTag("hostname", ext.HostName()),
-				jaeger.StringTag("ip", ext.HostIPStr()),
-				jaeger.StringTag("version", ext.Version()),
+				jaeger.StringTag("hostname", app.HostName()),
+				jaeger.StringTag("ip", app.HostIPStr()),
+				jaeger.StringTag("version", app.Version()),
 			},
 		},
 	})

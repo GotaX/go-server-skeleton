@@ -8,7 +8,7 @@ import (
 	_ "github.com/lib/pq"
 
 	"github.com/GotaX/go-server-skeleton/pkg/cfg"
-	"github.com/GotaX/go-server-skeleton/pkg/ext"
+	"github.com/GotaX/go-server-skeleton/pkg/cfg/rds"
 )
 
 var Option = cfg.Option{
@@ -42,7 +42,7 @@ func newPostgres(source cfg.Scanner) (v interface{}, err error) {
 
 	name := "postgres"
 	if c.Tracing {
-		if name, err = ext.RegisterTracingDriver(name); err != nil {
+		if name, err = rds.RegisterTracingDriver(name); err != nil {
 			return nil, err
 		}
 	}
