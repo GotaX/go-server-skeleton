@@ -8,7 +8,7 @@ import (
 	"github.com/GotaX/go-server-skeleton/pkg/cfg"
 )
 
-var Redis = cfg.Option{
+var Option = cfg.Option{
 	Name:     "Redis",
 	OnCreate: newRedis,
 }
