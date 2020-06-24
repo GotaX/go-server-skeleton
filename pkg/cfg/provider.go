@@ -1,4 +1,4 @@
-package factory
+package cfg
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"golang.org/x/xerrors"
 
-	"github.com/GotaX/go-server-skeleton/pkg/ext"
+	"github.com/GotaX/go-server-skeleton/pkg/ext/shutdown"
 )
 
 var components = make(map[string]interface{})
@@ -41,7 +41,7 @@ func Register(name string, option Option, source Scanner, lazy bool) ProviderMet
 
 			if option.OnDestroy != nil {
 				// Register shutdown hook
-				ext.OnShutdown(func() {
+				shutdown.AddHook(func() {
 					logger.Debug("Start shutdown...")
 					option.OnDestroy(value)
 					logger.Debug("Finish Shutdown")

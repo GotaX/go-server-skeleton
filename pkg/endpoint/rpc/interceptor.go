@@ -12,7 +12,7 @@ import (
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
 
-	"github.com/GotaX/go-server-skeleton/pkg/ext"
+	grpc2 "github.com/GotaX/go-server-skeleton/pkg/ext/grpc"
 )
 
 func init() {
@@ -50,20 +50,20 @@ func NewGrpcServer(configure func(c *GrpcConfiguration)) *grpc.Server {
 	configure(c)
 
 	s := grpc.NewServer(
-		grpc.StatsHandler(ext.TraceHandler()),
+		grpc.StatsHandler(grpc2.TraceHandler()),
 		grpc.StreamInterceptor(grpcMiddleware.ChainStreamServer(
 			grpcCtxTags.StreamServerInterceptor(grpcCtxTags.WithFieldExtractor(c.LogExtractor)),
-			grpcLogrus.StreamServerInterceptor(c.LogEntry, ext.LogDecider()),
+			grpcLogrus.StreamServerInterceptor(c.LogEntry, grpc2.LogDecider()),
 			grpcPrometheus.StreamServerInterceptor,
-			grpcRecovery.StreamServerInterceptor(ext.RecoveryHandler()),
-			ext.StreamServerErrorHandler(),
+			grpcRecovery.StreamServerInterceptor(grpc2.RecoveryHandler()),
+			grpc2.StreamServerErrorHandler(),
 		)),
 		grpc.UnaryInterceptor(grpcMiddleware.ChainUnaryServer(
 			grpcCtxTags.UnaryServerInterceptor(grpcCtxTags.WithFieldExtractor(c.LogExtractor)),
-			grpcLogrus.UnaryServerInterceptor(c.LogEntry, ext.LogDecider()),
+			grpcLogrus.UnaryServerInterceptor(c.LogEntry, grpc2.LogDecider()),
 			grpcPrometheus.UnaryServerInterceptor,
-			grpcRecovery.UnaryServerInterceptor(ext.RecoveryHandler()),
-			ext.UnaryServerErrorHandler(),
+			grpcRecovery.UnaryServerInterceptor(grpc2.RecoveryHandler()),
+			grpc2.UnaryServerErrorHandler(),
 		)))
 
 	for _, srv := range c.services {

@@ -7,9 +7,12 @@ import (
 	"github.com/micro/go-micro/config/source/env"
 	"github.com/sirupsen/logrus"
 
-	"github.com/GotaX/go-server-skeleton/pkg/cfg/factory"
-	"github.com/GotaX/go-server-skeleton/pkg/ext"
+	"github.com/GotaX/go-server-skeleton/pkg/cfg"
+	"github.com/GotaX/go-server-skeleton/pkg/cfg/grpc"
+	logrus2 "github.com/GotaX/go-server-skeleton/pkg/cfg/logrus"
+	"github.com/GotaX/go-server-skeleton/pkg/cfg/tracing"
 	"github.com/GotaX/go-server-skeleton/pkg/ext/config/spring"
+	"github.com/GotaX/go-server-skeleton/pkg/ext/shutdown"
 )
 
 const (
@@ -19,29 +22,31 @@ const (
 )
 
 var (
-	LogGrpc factory.ProviderMethod
+	LogGrpc cfg.ProviderMethod
+	Local   cfg.ProviderMethod
 )
 
 func init() {
 	name, profile := loadConfig()
 
-	_ = register("log", factory.Log, false)
-	LogGrpc = register("logGrpc", factory.Log, false)
-	_ = register("trace", factory.Tracing, false)
+	_ = register("log", logrus2.Option, false)
+	LogGrpc = register("logGrpc", logrus2.Option, false)
+	_ = register("trace", tracing.Option, false)
+	Local = register("grpc.local", grpc.Option, true)
 
 	logrus.Infof("Init over, profile: %s-%s\n", name, profile)
 }
 
-func register(name string, create factory.Option, lazy bool) factory.ProviderMethod {
+func register(name string, create cfg.Option, lazy bool) cfg.ProviderMethod {
 	source := config.Get(strings.Split(name, ".")...)
-	return factory.Register(name, create, source, lazy)
+	return cfg.Register(name, create, source, lazy)
 }
 
 func loadConfig() (name, profile string) {
 	if err := config.Load(env.NewSource()); err != nil {
 		logrus.Fatal(err)
 	}
-	ext.OnShutdown(func() {
+	shutdown.AddHook(func() {
 		entry := logrus.WithField("name", "ConfigWatcher")
 		if err := config.DefaultConfig.Close(); err != nil {
 			entry.WithError(err).Warn("Fail to stop")

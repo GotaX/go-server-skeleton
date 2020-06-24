@@ -1,4 +1,4 @@
-package factory
+package cfg
 
 import (
 	"database/sql"
@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/GotaX/go-server-skeleton/pkg/ext"
+	"github.com/GotaX/go-server-skeleton/pkg/cfg/rds"
 )
 
 const (
@@ -35,7 +35,7 @@ func IsDefaultEnv() bool {
 	return profile == "" || profile == DefaultProfile
 }
 
-func sliceToMap(slice []string, sep string) map[string]string {
+func SliceToMap(slice []string, sep string) map[string]string {
 	m := make(map[string]string)
 	for _, v := range slice {
 		kv := strings.SplitN(v, sep, 2)
@@ -44,7 +44,7 @@ func sliceToMap(slice []string, sep string) map[string]string {
 	return m
 }
 
-func sliceToValues(slice []string, sep string) url.Values {
+func SliceToValues(slice []string, sep string) url.Values {
 	m := url.Values{}
 	for _, v := range slice {
 		kv := strings.SplitN(v, sep, 2)
@@ -53,6 +53,6 @@ func sliceToValues(slice []string, sep string) url.Values {
 	return m
 }
 
-func registerDBStats(name string, v interface{}) {
-	ext.RegisterDbStats(5*time.Second, v.(*sql.DB), name)
+func RegisterDBStats(name string, v interface{}) {
+	rds.RegisterDbStats(5*time.Second, v.(*sql.DB), name)
 }

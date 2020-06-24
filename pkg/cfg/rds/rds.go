@@ -1,4 +1,4 @@
-package ext
+package rds
 
 import (
 	"context"
@@ -13,8 +13,9 @@ import (
 	"time"
 
 	. "github.com/prometheus/client_golang/prometheus"
-	"github.com/sirupsen/logrus"
 	"go.opencensus.io/trace"
+
+	"github.com/GotaX/go-server-skeleton/pkg/ext/app"
 )
 
 var (
@@ -46,25 +47,6 @@ var (
 	registerDBMetrics = &sync.Once{}
 )
 
-func RunTicker(name string, interval time.Duration, handler func()) {
-	ticker := time.NewTicker(interval)
-	ctx, cancel := context.WithCancel(context.Background())
-
-	OnShutdown(cancel)
-
-	go func() {
-		defer logrus.WithField("name", "Ticker ("+name+")").Debug("Stopped")
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			case <-ticker.C:
-				handler()
-			}
-		}
-	}()
-}
-
 func RegisterDbStats(interval time.Duration, db *sql.DB, name string) {
 	registerDBMetrics.Do(func() {
 		MustRegister(dbUp, dbIdle, dbInUse, dbOpenConnections, dbWaitCount, dbWaitDuration)
@@ -72,7 +54,7 @@ func RegisterDbStats(interval time.Duration, db *sql.DB, name string) {
 
 	name = regexp.MustCompile(`\w+ \((\w+)\)`).FindStringSubmatch(name)[1]
 	labels := Labels{"name": name}
-	RunTicker(fmt.Sprintf("DB stats checker %s", name), interval, func() {
+	app.RunTicker(fmt.Sprintf("DB stats checker %s", name), interval, func() {
 		stats := db.Stats()
 		dbIdle.With(labels).Set(float64(stats.Idle))
 		dbInUse.With(labels).Set(float64(stats.InUse))

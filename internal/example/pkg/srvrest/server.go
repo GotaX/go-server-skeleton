@@ -8,7 +8,9 @@ import (
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"google.golang.org/grpc"
 
+	"github.com/GotaX/go-server-skeleton/internal/example/pkg/cfg"
 	"github.com/GotaX/go-server-skeleton/internal/example/pkg/rpc"
 	"github.com/GotaX/go-server-skeleton/pkg/endpoint/server"
 	"github.com/GotaX/go-server-skeleton/pkg/errors"
@@ -17,10 +19,8 @@ import (
 func Router() http.Handler {
 	return server.Gin(func(r gin.IRouter) {
 		// Connect grpc
-		cc, err := server.Grpc("localhost:8082")
-		if err != nil {
-			logrus.WithError(err).Fatal("did not connect")
-		}
+		var cc *grpc.ClientConn
+		cfg.Local(&cc)
 
 		client := rpc.NewHelloServiceClient(cc)
 		logrus.Debug("rpc connected")

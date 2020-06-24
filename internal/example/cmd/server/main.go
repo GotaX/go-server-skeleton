@@ -11,7 +11,7 @@ import (
 	"github.com/GotaX/go-server-skeleton/internal/example/pkg/srvrpc"
 	"github.com/GotaX/go-server-skeleton/pkg/endpoint"
 	"github.com/GotaX/go-server-skeleton/pkg/endpoint/metrics"
-	"github.com/GotaX/go-server-skeleton/pkg/ext"
+	"github.com/GotaX/go-server-skeleton/pkg/ext/shutdown"
 )
 
 func main() {
@@ -23,5 +23,5 @@ func main() {
 	if err != nil && !errors.Is(err, http.ErrServerClosed) {
 		logrus.WithError(err).Error("Shutdown")
 	}
-	ext.WaitShutdown()
+	shutdown.Wait()
 }

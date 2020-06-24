@@ -1,4 +1,4 @@
-package factory
+package proxy
 
 import (
 	"net"
@@ -6,9 +6,11 @@ import (
 
 	mysql0 "github.com/go-sql-driver/mysql"
 	driver "golang.org/x/net/proxy"
+
+	"github.com/GotaX/go-server-skeleton/pkg/cfg"
 )
 
-var Proxy = Option{
+var Option = cfg.Option{
 	Name:     "Proxy",
 	OnCreate: newProxy,
 	OnCreated: func(name string, v interface{}) {
@@ -18,7 +20,7 @@ var Proxy = Option{
 	},
 }
 
-func newProxy(source Scanner) (interface{}, error) {
+func newProxy(source cfg.Scanner) (interface{}, error) {
 	var c struct {
 		Protocol string `json:"protocol"`
 		Address  string `json:"address"`

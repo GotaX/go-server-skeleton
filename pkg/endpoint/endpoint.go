@@ -12,7 +12,8 @@ import (
 	"go.opencensus.io/plugin/ochttp"
 	"golang.org/x/sync/errgroup"
 
-	"github.com/GotaX/go-server-skeleton/pkg/ext"
+	"github.com/GotaX/go-server-skeleton/pkg/ext/shutdown"
+	"github.com/GotaX/go-server-skeleton/pkg/ext/tracing"
 )
 
 type Endpoint interface {
@@ -32,7 +33,7 @@ func Run(endpoints ...Endpoint) error {
 			return e.Run()
 		})
 
-		ext.OnShutdown(func() {
+		shutdown.AddHook(func() {
 			entry.Debug("Shutdown...")
 			if err := e.Stop(); err != nil {
 				entry.WithError(err).Warn("Fail to shutdown")
@@ -56,7 +57,7 @@ func Http(name, addr string, handler http.Handler) Endpoint {
 			Addr: addr,
 			Handler: &ochttp.Handler{
 				Handler:          handler,
-				Propagation:      ext.Propagation,
+				Propagation:      tracing.Propagation,
 				FormatSpanName:   newSpanNameFormatter(),
 				IsHealthEndpoint: newHealthEndpoint(),
 			},

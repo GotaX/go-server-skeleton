@@ -1,31 +1,23 @@
-package factory
+package postgres
 
 import (
 	"database/sql"
 	"fmt"
 	"math"
 
-	driver "github.com/go-sql-driver/mysql"
-	"github.com/sirupsen/logrus"
+	_ "github.com/lib/pq"
 
-	"github.com/GotaX/go-server-skeleton/pkg/ext"
+	"github.com/GotaX/go-server-skeleton/pkg/cfg"
+	"github.com/GotaX/go-server-skeleton/pkg/cfg/rds"
 )
 
-var MySQL = Option{
-	Name:      "MySQL",
-	OnCreate:  newMySQL,
-	OnCreated: registerDBStats,
+var Option = cfg.Option{
+	Name:      "Postgres",
+	OnCreate:  newPostgres,
+	OnCreated: cfg.RegisterDBStats,
 }
 
-type mysqlLogger struct{}
-
-func (l *mysqlLogger) Print(v ...interface{}) { logrus.Debug(v...) }
-
-func newMySQL(source Scanner) (v interface{}, err error) {
-	if err := driver.SetLogger(&mysqlLogger{}); err != nil {
-		return nil, err
-	}
-
+func newPostgres(source cfg.Scanner) (v interface{}, err error) {
 	var c struct {
 		Host     string   `json:"host"`
 		Port     string   `json:"port"`
@@ -41,16 +33,16 @@ func newMySQL(source Scanner) (v interface{}, err error) {
 		return nil, err
 	}
 
-	mu := fmt.Sprintf("%v:%v@tcp(%v:%v)/%v",
+	mu := fmt.Sprintf("postgres://%v:%v@%v:%v/%v",
 		c.Username, c.Password, c.Host, c.Port, c.Database)
 	if len(c.Params) > 0 {
-		values := sliceToValues(c.Params, "=")
+		values := cfg.SliceToValues(c.Params, "=")
 		mu += "?" + values.Encode()
 	}
 
-	name := "mysql"
+	name := "postgres"
 	if c.Tracing {
-		if name, err = ext.RegisterTracingDriver(name); err != nil {
+		if name, err = rds.RegisterTracingDriver(name); err != nil {
 			return nil, err
 		}
 	}

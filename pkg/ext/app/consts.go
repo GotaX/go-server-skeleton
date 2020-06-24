@@ -1,4 +1,4 @@
-package ext
+package app
 
 import "os"
 

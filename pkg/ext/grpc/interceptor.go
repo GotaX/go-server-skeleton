@@ -1,4 +1,4 @@
-package ext
+package grpc
 
 import (
 	"context"
@@ -14,6 +14,7 @@ import (
 	"google.golang.org/grpc/stats"
 
 	"github.com/GotaX/go-server-skeleton/pkg/errors"
+	"github.com/GotaX/go-server-skeleton/pkg/ext/tracing"
 )
 
 func StreamClientErrorHandler() grpc.StreamClientInterceptor {
@@ -37,7 +38,7 @@ func UnaryClientErrorHandler() grpc.UnaryClientInterceptor {
 func StreamServerErrorHandler() grpc.StreamServerInterceptor {
 	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) (err error) {
 		if err = handler(srv, ss); err != nil {
-			ri := GetRequestInfo(ss.Context())
+			ri := tracing.GetRequestInfo(ss.Context())
 			err = errors.Grpc(ri.String(), err)
 		}
 		return
@@ -47,7 +48,7 @@ func StreamServerErrorHandler() grpc.StreamServerInterceptor {
 func UnaryServerErrorHandler() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 		if resp, err = handler(ctx, req); err != nil {
-			ri := GetRequestInfo(ctx)
+			ri := tracing.GetRequestInfo(ctx)
 			err = errors.Grpc(ri.String(), err)
 		}
 		return

@@ -1,15 +1,17 @@
-package factory
+package tablestore
 
 import (
 	driver "github.com/aliyun/aliyun-tablestore-go-sdk/tablestore"
+
+	"github.com/GotaX/go-server-skeleton/pkg/cfg"
 )
 
-var OTS = Option{
+var Option = cfg.Option{
 	Name:     "OTS",
 	OnCreate: newOts,
 }
 
-func newOts(source Scanner) (interface{}, error) {
+func newOts(source cfg.Scanner) (interface{}, error) {
 	var c struct {
 		Id       string `json:"id"`
 		Secret   string `json:"secret"`

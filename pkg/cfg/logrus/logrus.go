@@ -1,4 +1,4 @@
-package factory
+package logrus
 
 import (
 	"context"
@@ -7,16 +7,17 @@ import (
 	slsh "github.com/GotaX/logrus-aliyun-log-hook"
 	"github.com/sirupsen/logrus"
 
-	"github.com/GotaX/go-server-skeleton/pkg/ext"
+	"github.com/GotaX/go-server-skeleton/pkg/cfg"
+	"github.com/GotaX/go-server-skeleton/pkg/ext/app"
 )
 
-var Log = Option{
+var Option = cfg.Option{
 	Name:      "Log",
 	OnCreate:  newLog,
 	OnDestroy: flushLog,
 }
 
-func newLog(source Scanner) (interface{}, error) {
+func newLog(source cfg.Scanner) (interface{}, error) {
 	var lc struct {
 		Level    string   `json:"level"`
 		Endpoint string   `json:"endpoint"`
@@ -57,14 +58,14 @@ func newLog(source Scanner) (interface{}, error) {
 	}
 	logger.SetLevel(level)
 
-	if IsDefaultEnv() {
+	if cfg.IsDefaultEnv() {
 		return logger, nil
 	}
 
 	// Register hook
 
-	extra := sliceToMap(lc.Extra, "=")
-	extra["version"] = ext.Version()
+	extra := cfg.SliceToMap(lc.Extra, "=")
+	extra["version"] = app.Version()
 
 	hook, err := slsh.New(slsh.Config{
 		Endpoint:     lc.Endpoint,
