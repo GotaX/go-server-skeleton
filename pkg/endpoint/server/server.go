@@ -97,7 +97,7 @@ func RenderError(ctx *gin.Context, op errors.Op, err error) {
 	fields[lfCode] = resp.Error.Code
 	fields[lfError] = resp.Error.Message
 
-	ctx.JSON(resp.Error.Code, resp)
+	ctx.AbortWithStatusJSON(resp.Error.Code, resp)
 }
 
 func NotFound(name, id string) error {
