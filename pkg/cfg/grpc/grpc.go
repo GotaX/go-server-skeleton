@@ -1,6 +1,7 @@
 package grpc
 
 import (
+	"google.golang.org/grpc/keepalive"
 	"time"
 
 	retry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
@@ -28,6 +29,14 @@ func newGrpc(source cfg.Scanner) (interface{}, error) {
 		retry.WithBackoff(retry.BackoffExponential(100 * time.Millisecond)),
 		retry.WithCodes(codes.Unavailable, codes.ResourceExhausted, codes.Aborted),
 	}
+
+	// Ref: https://github.com/grpc/grpc-go/blob/master/examples/features/keepalive/client/main.go
+	kacp := keepalive.ClientParameters{
+		Time:                10 * time.Second, // send pings every 10 seconds if there is no activity
+		Timeout:             time.Second,      // wait 1 second for ping ack before considering the connection dead
+		PermitWithoutStream: true,             // send pings even without active streams
+	}
+
 	return driver.Dial(target, driver.WithInsecure(),
 		driver.WithStatsHandler(&ocgrpc.ClientHandler{
 			StartOptions: trace.StartOptions{
@@ -41,5 +50,6 @@ func newGrpc(source cfg.Scanner) (interface{}, error) {
 		driver.WithChainUnaryInterceptor(
 			retry.UnaryClientInterceptor(opts...),
 			grpc.UnaryClientErrorHandler(),
-		))
+		),
+		driver.WithKeepaliveParams(kacp))
 }
