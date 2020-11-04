@@ -10,7 +10,9 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
+	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/reflection"
+	"time"
 
 	grpc2 "github.com/GotaX/go-server-skeleton/pkg/ext/grpc"
 )
@@ -49,6 +51,20 @@ func NewGrpcServer(configure func(c *GrpcConfiguration)) *grpc.Server {
 	}
 	configure(c)
 
+	// Ref: https://github.com/grpc/grpc-go/blob/master/examples/features/keepalive/server/main.go
+	kaep := keepalive.EnforcementPolicy{
+		MinTime:             5 * time.Second, // If a client pings more than once every 5 seconds, terminate the connection
+		PermitWithoutStream: true,            // Allow pings even when there are no active streams
+	}
+
+	kasp := keepalive.ServerParameters{
+		MaxConnectionIdle:     15 * time.Second, // If a client is idle for 15 seconds, send a GOAWAY
+		MaxConnectionAge:      30 * time.Second, // If any connection is alive for more than 30 seconds, send a GOAWAY
+		MaxConnectionAgeGrace: 5 * time.Second,  // Allow 5 seconds for pending RPCs to complete before forcibly closing connections
+		Time:                  5 * time.Second,  // Ping the client if it is idle for 5 seconds to ensure the connection is still active
+		Timeout:               1 * time.Second,  // Wait 1 second for the ping ack before assuming the connection is dead
+	}
+
 	s := grpc.NewServer(
 		grpc.StatsHandler(grpc2.TraceHandler()),
 		grpc.StreamInterceptor(grpcMiddleware.ChainStreamServer(
@@ -64,7 +80,9 @@ func NewGrpcServer(configure func(c *GrpcConfiguration)) *grpc.Server {
 			grpcPrometheus.UnaryServerInterceptor,
 			grpcRecovery.UnaryServerInterceptor(grpc2.RecoveryHandler()),
 			grpc2.UnaryServerErrorHandler(),
-		)))
+		)),
+		grpc.KeepaliveEnforcementPolicy(kaep),
+		grpc.KeepaliveParams(kasp))
 
 	for _, srv := range c.services {
 		srv.Register(s)
