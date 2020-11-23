@@ -47,21 +47,19 @@ func newTracing(source cfg.Scanner) (interface{}, error) {
 			exporter, _, err = newZipkinExporter(c.ServiceName, c.Endpoint)
 			tracing.Propagation = &tracecontext.HTTPFormat{}
 		}
-	} else {
-		exporter = &PrintExporter{logger: logrus.StandardLogger()}
-	}
-	if err != nil {
-		logrus.WithError(err).Fatal("Fail to init tracing")
+		if err != nil {
+			logrus.WithError(err).Warn("Fail to init tracing")
+		}
 	}
 
-	if exporter != nil {
-		trace.RegisterExporter(exporter)
-		trace.ApplyConfig(trace.Config{
-			DefaultSampler: trace.AlwaysSample(),
-		})
-	} else {
-		logrus.Warn("Option exporter not set")
+	if exporter == nil {
+		exporter = &PrintExporter{logger: logrus.StandardLogger()}
 	}
+
+	trace.RegisterExporter(exporter)
+	trace.ApplyConfig(trace.Config{
+		DefaultSampler: trace.AlwaysSample(),
+	})
 
 	http.DefaultClient.Transport = &ochttp.Transport{
 		Propagation:    tracing.Propagation,
