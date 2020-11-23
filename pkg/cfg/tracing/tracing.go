@@ -25,6 +25,7 @@ var Option = cfg.Option{
 
 func newTracing(source cfg.Scanner) (interface{}, error) {
 	var c struct {
+		Enable      bool   `json:"enable"`
 		ServiceName string `json:"serviceName"`
 		Endpoint    string `json:"endpoint"`
 		Type        string `json:"type"`
@@ -32,6 +33,10 @@ func newTracing(source cfg.Scanner) (interface{}, error) {
 	}
 	if err := source.Scan(&c); err != nil {
 		return nil, err
+	}
+
+	if !c.Enable {
+		return nil, nil
 	}
 
 	var (
