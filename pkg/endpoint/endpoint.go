@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
 	"go.opencensus.io/plugin/ochttp"
 	"golang.org/x/sync/errgroup"
@@ -43,6 +44,30 @@ func Run(endpoints ...Endpoint) error {
 		})
 	}
 	return group.Wait()
+}
+
+type fiberSrv struct {
+	name string
+	addr string
+	app  *fiber.App
+}
+
+func Dapr(name, addr string, config func(r *fiber.App)) Endpoint {
+	app := fiber.New()
+	config(app)
+	return &fiberSrv{name: name, addr: addr, app: app}
+}
+
+func (e fiberSrv) Name() string {
+	return fmt.Sprintf("Http (%s), %s", e.addr, e.name)
+}
+
+func (e fiberSrv) Run() error {
+	return e.app.Listen(e.addr)
+}
+
+func (e fiberSrv) Stop() error {
+	return e.app.Shutdown()
 }
 
 type rest struct {
