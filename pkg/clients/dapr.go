@@ -1,4 +1,4 @@
-package client
+package clients
 
 import (
 	"context"
@@ -11,23 +11,23 @@ import (
 
 const DefaultEndpoint = "http://localhost:3500/v1.0"
 
-type DaprHttpClient interface {
+type DaprHttp interface {
 	Invoke(ctx context.Context, service, method string, req, resp interface{}) error
 }
 
-func NewDaprHttpClient() DaprHttpClient {
-	return &daprHttpClient{
+func NewDaprHttp() DaprHttp {
+	return &daprHttp{
 		Client:   resty.New(),
 		Endpoint: DefaultEndpoint,
 	}
 }
 
-type daprHttpClient struct {
+type daprHttp struct {
 	Client   *resty.Client
 	Endpoint string
 }
 
-func (c *daprHttpClient) Invoke(ctx context.Context, service, method string, req, resp interface{}) error {
+func (c *daprHttp) Invoke(ctx context.Context, service, method string, req, resp interface{}) error {
 	addr := fmt.Sprintf("%s/invoke/%s/method/%s", c.Endpoint, service, method)
 
 	response, err := c.Client.R().
