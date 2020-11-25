@@ -16,6 +16,7 @@ require (
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-redis/redis/v7 v7.0.0-beta.6
 	github.com/go-redis/redis/v8 v8.0.0-beta.5
+	github.com/go-resty/resty/v2 v2.3.0 // indirect
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gofiber/fiber/v2 v2.2.0
 	github.com/gogo/protobuf v1.3.1 // indirect
