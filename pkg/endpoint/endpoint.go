@@ -52,9 +52,7 @@ type fiberSrv struct {
 	app  *fiber.App
 }
 
-func Dapr(name, addr string, config func(r *fiber.App)) Endpoint {
-	app := fiber.New()
-	config(app)
+func Fiber(name, addr string, app *fiber.App) Endpoint {
 	return &fiberSrv{name: name, addr: addr, app: app}
 }
 

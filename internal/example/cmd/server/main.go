@@ -16,6 +16,7 @@ import (
 
 func main() {
 	err := endpoint.Run(
+		endpoint.Fiber("fiber", ":3000", srvrest.Fiber()),
 		endpoint.Http("rest", ":8080", srvrest.Router()),
 		endpoint.Http("metrics", ":8081", metrics.Router()),
 		endpoint.Grpc("app", ":8082", srvrpc.Server()),

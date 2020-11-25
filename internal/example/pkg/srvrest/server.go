@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 
@@ -43,5 +44,32 @@ func HelloHandler(client rpc.HelloServiceClient) func(*gin.Context) {
 			return
 		}
 		c.JSON(http.StatusOK, resp)
+	}
+}
+
+func Fiber() *fiber.App {
+	return server.Fiber(func(r *fiber.App) {
+		var cc *grpc.ClientConn
+		cfg.Local(&cc)
+
+		client := rpc.NewHelloServiceClient(cc)
+		logrus.Debug("rpc connected")
+
+		r.All("", FiberHelloHandler(client))
+	})
+}
+
+func FiberHelloHandler(client rpc.HelloServiceClient) func(*fiber.Ctx) error {
+	const op errors.Op = "server.HelloHandler"
+
+	return func(c *fiber.Ctx) error {
+		ctx, _ := context.WithTimeout(c.Context(), time.Second)
+		req := &rpc.HelloRequest{Greeting: "hero"}
+		resp, err := client.SayHello(ctx, req)
+		if err != nil {
+			return errors.E(op, err)
+		}
+
+		return c.JSON(resp)
 	}
 }
