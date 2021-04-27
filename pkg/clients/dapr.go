@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/url"
 	"strings"
+	"unicode"
 
 	"github.com/go-resty/resty/v2"
 	"google.golang.org/grpc/metadata"
@@ -56,9 +57,21 @@ func headersFromContext(ctx context.Context) map[string]string {
 
 	if md, ok := metadata.FromOutgoingContext(ctx); ok {
 		for key, values := range md {
-			content := strings.Join(values, ";")
-			headers[key] = url.QueryEscape(content)
+			content := strings.Join(values, ",")
+			if !asciiOnly(content) {
+				content = url.QueryEscape(content)
+			}
+			headers[key] = content
 		}
 	}
 	return headers
+}
+
+func asciiOnly(s string) bool {
+	for i := 0; i < len(s); i++ {
+		if s[i] > unicode.MaxASCII {
+			return false
+		}
+	}
+	return true
 }
