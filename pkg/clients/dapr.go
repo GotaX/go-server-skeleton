@@ -1,8 +1,11 @@
 package clients
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io"
+	"net/http"
 	"net/url"
 	"strings"
 	"unicode"
@@ -47,7 +50,11 @@ func (c *daprHttp) Invoke(ctx context.Context, service, method string, req, resp
 		return err
 	}
 	if response.IsError() {
-		return errors.FromHttp(response.RawResponse)
+		respCopy := &http.Response{
+			StatusCode: response.StatusCode(),
+			Body:       io.NopCloser(bytes.NewReader(response.Body())),
+		}
+		return errors.FromHttp(respCopy)
 	}
 	return nil
 }
