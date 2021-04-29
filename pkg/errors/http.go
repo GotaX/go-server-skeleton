@@ -51,11 +51,15 @@ func FromHttp(resp *http.Response) error {
 	}
 
 	var hr HttpResponse
-	if err = json.Unmarshal(data, &hr); err != nil || hr.Error.Code == 0 {
+	if err = json.Unmarshal(data, &hr); err != nil {
 		return E(Internal, err)
 	}
 
-	return E(StrToCode(hr.Error.Status), hr.Error.Message)
+	if hr.Error.Code > 0 {
+		return E(StrToCode(hr.Error.Status), hr.Error.Message)
+	}
+
+	return E(Unknown, string(data))
 }
 
 func Http(requestId string, err error) (r HttpResponse) {
