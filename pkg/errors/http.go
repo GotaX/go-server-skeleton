@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -56,7 +57,12 @@ func FromHttp(resp *http.Response) error {
 	}
 
 	if hr.Error.Code > 0 {
-		return E(StrToCode(hr.Error.Status), hr.Error.Message)
+		req := resp.Request
+		return E(
+			StrToCode(hr.Error.Status),
+			errors.New(hr.Error.Message),
+			fmt.Sprintf("%s %s", req.Method, req.URL),
+		)
 	}
 
 	return E(Unknown, string(data))

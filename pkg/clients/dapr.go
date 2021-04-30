@@ -51,6 +51,7 @@ func (c *daprHttp) Invoke(ctx context.Context, service, method string, req, resp
 	}
 	if response.IsError() {
 		respCopy := &http.Response{
+			Request:    response.Request.RawRequest,
 			StatusCode: response.StatusCode(),
 			Body:       io.NopCloser(bytes.NewReader(response.Body())),
 		}
