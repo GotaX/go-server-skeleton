@@ -1,8 +1,9 @@
 package grpc
 
 import (
-	"google.golang.org/grpc/keepalive"
 	"time"
+
+	"google.golang.org/grpc/keepalive"
 
 	retry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
 	"go.opencensus.io/plugin/ocgrpc"
@@ -33,7 +34,7 @@ func newGrpc(source cfg.Scanner) (interface{}, error) {
 	// Ref: https://github.com/grpc/grpc-go/blob/master/examples/features/keepalive/client/main.go
 	kacp := keepalive.ClientParameters{
 		Time:                10 * time.Second, // send pings every 10 seconds if there is no activity
-		Timeout:             time.Second,      // wait 1 second for ping ack before considering the connection dead
+		Timeout:             3 * time.Second,  // wait 3 seconds for ping ack before considering the connection dead
 		PermitWithoutStream: true,             // send pings even without active streams
 	}
 
