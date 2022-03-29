@@ -16,12 +16,12 @@ require (
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-redis/redis/v7 v7.0.0-beta.6
 	github.com/go-redis/redis/v8 v8.0.0-beta.5
-	github.com/go-resty/resty/v2 v2.3.0 // indirect
+	github.com/go-resty/resty/v2 v2.3.0
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gofiber/fiber/v2 v2.2.0
 	github.com/gogo/protobuf v1.3.1 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
-	github.com/golang/protobuf v1.3.3
+	github.com/golang/protobuf v1.5.2
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.0
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/lib/pq v1.3.0
@@ -35,13 +35,13 @@ require (
 	github.com/streadway/amqp v0.0.0-20200108173154-1c71cc93ed71
 	github.com/uber/jaeger-client-go v2.22.1+incompatible // indirect
 	go.opencensus.io v0.22.3
-	golang.org/x/net v0.0.0-20201016165138-7b1cca2348c0
-	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
+	golang.org/x/net v0.0.0-20210316092652-d523dce5a7f4
+	golang.org/x/sync v0.0.0-20201020160332-67f06af15bc9
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
-	golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543
+	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 	google.golang.org/api v0.17.0 // indirect
-	google.golang.org/genproto v0.0.0-20200210034751-acff78025515
-	google.golang.org/grpc v1.29.1
+	google.golang.org/genproto v0.0.0-20210416161957-9910b6c460de
+	google.golang.org/grpc v1.37.0
 	gopkg.in/go-playground/validator.v9 v9.31.0 // indirect
 	gopkg.in/ini.v1 v1.52.0 // indirect
 	gopkg.in/yaml.v2 v2.2.8 // indirect
