@@ -153,6 +153,15 @@ func Detail(err error) []proto.Message {
 
 	if sub := errors.Unwrap(err); sub != nil {
 		return Detail(sub)
+	} else {
+		s := status.Convert(err)
+		details := s.Details()
+		messages := make([]proto.Message, 0, len(details))
+		for _, detail := range details {
+			if msg, ok := detail.(proto.Message); ok {
+				messages = append(messages, msg)
+			}
+		}
+		return messages
 	}
-	return nil
 }
