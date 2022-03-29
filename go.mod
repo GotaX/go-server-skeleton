@@ -12,8 +12,7 @@ require (
 	github.com/aliyun/fc-go-sdk v0.0.0-20190905094252-42fe777758b0
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/gin-contrib/gzip v0.0.1
-	github.com/gin-gonic/gin v1.5.0
-	github.com/go-playground/universal-translator v0.17.0 // indirect
+	github.com/gin-gonic/gin v1.7.0
 	github.com/go-redis/redis/v7 v7.0.0-beta.6
 	github.com/go-redis/redis/v8 v8.0.0-beta.5
 	github.com/go-resty/resty/v2 v2.3.0
@@ -25,7 +24,6 @@ require (
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.0
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/lib/pq v1.3.0
-	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/micro/go-micro v1.18.0
 	github.com/openzipkin/zipkin-go v0.2.2
 	github.com/pierrec/lz4 v2.4.1+incompatible // indirect
@@ -42,7 +40,5 @@ require (
 	google.golang.org/api v0.17.0 // indirect
 	google.golang.org/genproto v0.0.0-20210416161957-9910b6c460de
 	google.golang.org/grpc v1.37.0
-	gopkg.in/go-playground/validator.v9 v9.31.0 // indirect
 	gopkg.in/ini.v1 v1.52.0 // indirect
-	gopkg.in/yaml.v2 v2.2.8 // indirect
 )
